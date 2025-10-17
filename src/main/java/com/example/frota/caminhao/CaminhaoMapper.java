@@ -10,7 +10,6 @@ import com.example.frota.marca.Marca;
 
 @Mapper(componentModel = "spring")
 public interface CaminhaoMapper {
-    
     // Converte Entity para DTO (para preencher formulário de edição)
     @Mapping(target = "marcaId", source = "marca.id")
     AtualizacaoCaminhao toAtualizacaoDto(Caminhao caminhao);
