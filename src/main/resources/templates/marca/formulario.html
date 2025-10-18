@@ -1,29 +1,44 @@
 <!DOCTYPE html>
-<html lang ="en" xmlns:th="http://thymeleaf.org" >
-<head th:replace="~{fragmentos/head :: head('Cadastro Marcas')}"></head>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: head('Manter Caixa')}"></head>
 <body>
-<header th:replace="~{fragmentos/header :: header(activePage='marca')}"></header>
+	<header
+		th:replace="~{fragmentos/header :: header(activePage='Marca')}"></header>
+	<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+		<h2 class="text-center"
+			th:text="(${marca != null and marca.id != null} ? 'Editar Marca' : 'Novo Marca')"></h2>
+		<div th:if="${message != null}"
+			class="alert alert-success alert-dismissible fade show text-center"
+			role="alert">
+			[[${message}]]
+			<button type="button" class="close btn-sm" data-dismiss="alert"
+				aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
 
-<div layout:fragment="header">
-	<div class="box">
-		<h1>Cadastro Marca</h1>
-		<form method="post" action="/marca">
-			<input type="hidden" name="_method" value="put" th:if="${marca!= null}">
-			<input type="hidden" name="id" th:value="${marca?.id}">
-			
-			<div>
-				<label for="nome"> Nome: </label>
-				<input type="text" id="nome" name="nome" th:value="${marca?.nome}">
+		<form th:action="@{/marca/cadastrar}" th:object="${marca}"
+			method="post" >
+			<input type="hidden" th:field="*{id}" />
+
+			<div class="form-group">
+				<label for="nome"> Nome: </label> 
+				<input class="form-control" type="text" th:field="*{nome}"
+					th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'">
+					<div th:errors="*{nome}" class="invalid-feedback"></div>
 			</div>
-			
-			<div>
-				<label for="pais"> Pais: </label>
-				<input type="text" id="pais" name="pais" th:value="${marca?.pais}">
+			<div class="form-group">
+				<label for="pais"> País: </label> <input class="form-control"
+					type="text" th:field="*{pais}"
+					 th:classappend="${#fields.hasErrors('pais')} ? 'is-invalid'">
+                <div th:errors="*{pais}" class="invalid-feedback"></div>
 			</div>
-			
-			<input type="submit" value="Cadastrar">
+			<button type="submit" class="btn btn-primary">
+                <span th:text="${marca.id != null} ? 'Atualizar' : 'Cadastrar'"></span>
+            </button>
+             <a th:href="@{/marca}" class="btn btn-secondary">Cancelar</a>
 		</form>
 	</div>
-</div>
+	<div th:replace="~{fragmentos/footer :: footer}"></div>
 </body>
 </html>
