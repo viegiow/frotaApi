@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: head('Início')}"></head>
+<body>
+	<header
+		th:replace="~{fragmentos/header :: header(activePage='Inicio')}"></header>
+	<h2 class="text-center"></h2>
+	<div th:replace="fragmentos/footer :: footer"></div>
+</body>
+</html>

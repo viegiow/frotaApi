@@ -14,30 +14,54 @@
 				<ul class="navbar-nav me-auto">
 					<!-- Item normal -->
 					<li class="nav-item"><a class="nav-link"
-						th:classappend="${activePage == 'dashboard'} ? 'active' : ''"
-						th:href="@{/home/dashboard}"> <i class="fas fa-home me-1"></i>
+						th:classappend="${activePage == 'inicio'} ? 'active' : ''"
+						th:href="@{/inicio}"> <i class="fas fa-home me-1"></i>
 							Início
+					</a></li>
+					
+					<li class="nav-item"><a class="nav-link"
+						th:classappend="${activePage == 'caminhao'} ? 'active' : ''"
+						th:href="@{/caminhao}"> <i class="fas fa-film me-1"></i>
+							Caminhão
+					</a></li>
+					
+					<li class="nav-item"><a class="nav-link"
+						th:classappend="${activePage == 'produto'} ? 'active' : ''"
+						th:href="@{/produto}"> <i class="fas fa-film me-1"></i>
+							Produto
+					</a></li>
+					
+					<li class="nav-item"><a class="nav-link"
+						th:classappend="${activePage == 'caixa'} ? 'active' : ''"
+						th:href="@{/caixa}"> <i class="fas fa-film me-1"></i>
+							Caixa
+					</a></li>
+					
+					<li class="nav-item"><a class="nav-link"
+						th:classappend="${activePage == 'solicitacao'} ? 'active' : ''"
+						th:href="@{/solicitacao}"> <i class="fas fa-film me-1"></i>
+							Solicitação
 					</a></li>
 
 					<!-- Dropdown de Marcas -->
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" id="filmesDropdown"
-						role="button" data-bs-toggle="dropdown" aria-expanded="false"
-						th:classappend="${activePage == '' || activePage == 'caminhao'} ? 'active' : ''"
-						style="cursor: pointer;"> <i class="fas fa-film me-1"></i>
-							caminhao
-						</a>
-						<ul class="dropdown-menu" aria-labelledby="filmesDropdown">
-							<li><a class="dropdown-item"
-								th:classappend="${activePage == 'caminhao'} ? 'active' : ''"
-								th:href="@{/caminhao}"> <i class="fas fa-list me-1"></i> Listagem Caminhao</a>
-							</li>
-							<li><a class="dropdown-item"
-								th:classappend="${activePage == 'caminhao'} ? 'active' : ''"
-								th:href="@{/caminhao/formulario}"> <i class="fas fa-star me-1"></i> Cadastrar Caminhao
-							</a></li>
-						</ul>
-					</li>
+<!-- 					<li class="nav-item dropdown"> -->
+<!-- 						<a class="nav-link dropdown-toggle" id="filmesDropdown" -->
+<!-- 						role="button" data-bs-toggle="dropdown" aria-expanded="false" -->
+<!-- 						th:classappend="${activePage == '' || activePage == 'caminhao'} ? 'active' : ''" -->
+<!-- 						style="cursor: pointer;"> <i class="fas fa-film me-1"></i> -->
+<!-- 							caminhao -->
+<!-- 						</a> -->
+<!-- 						<ul class="dropdown-menu" aria-labelledby="filmesDropdown"> -->
+<!-- 							<li><a class="dropdown-item" -->
+<!-- 								th:classappend="${activePage == 'caminhao'} ? 'active' : ''" -->
+<!-- 								th:href="@{/caminhao}"> <i class="fas fa-list me-1"></i> Listagem Caminhao</a> -->
+<!-- 							</li> -->
+<!-- 							<li><a class="dropdown-item" -->
+<!-- 								th:classappend="${activePage == 'caminhao'} ? 'active' : ''" -->
+<!-- 								th:href="@{/caminhao/formulario}"> <i class="fas fa-star me-1"></i> Cadastrar Caminhao -->
+<!-- 							</a></li> -->
+<!-- 						</ul> -->
+<!-- 					</li> -->
 				</ul>
 
 				<div class="d-flex align-items-center">
