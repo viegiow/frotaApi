@@ -1,5 +1,6 @@
 package com.example.frota.produto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CadastroProduto(
@@ -7,6 +8,8 @@ public record CadastroProduto(
 		int comprimento,
 		int altura,
 		int largura,
-		double pesoProduto) {
+		double pesoProduto,
+		@NotBlank
+		String nome) {
 
 }

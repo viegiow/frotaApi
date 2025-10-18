@@ -1,0 +1,17 @@
+package com.example.frota.solicitacao;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record AtualizacaoSolicitacao(
+		Long id,
+		@NotBlank
+		String enderecoPartida,
+		String enderecoDestino,
+		Long produtoId,
+		Long caixaId,
+		@NotNull
+		double pedagio,
+		double custoKm) {
+
+}
