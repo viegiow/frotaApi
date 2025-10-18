@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.frota.caixa.CaixaService;
-import com.example.frota.caminhao.AtualizacaoCaminhao;
-import com.example.frota.caminhao.Caminhao;
 import com.example.frota.produto.ProdutoService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -53,7 +51,7 @@ public class SolicitacaoController {
             dto = solicitacaoMapper.toAtualizacaoDto(solicitacao);
         } else {
             // criação: DTO vazio
-            dto = new AtualizacaoSolicitacao(null, "", "", null, null);
+            dto = new AtualizacaoSolicitacao(null, 0.0, 0.0, 0.0, null, null, null, null);
         }
         model.addAttribute("solicitacao", dto);
         model.addAttribute("produtos", produtoService.procurarTodas());
@@ -91,6 +89,8 @@ public class SolicitacaoController {
                         Model model) {
 		if (result.hasErrors()) {
 	        // Recarrega dados necessários para mostrar erros
+			System.out.println(result);
+			model.addAttribute("solicitacao", dto);
 			model.addAttribute("produtos", produtoService.procurarTodas());
 	        model.addAttribute("caixas", caixaService.procurarTodas());
 	        return "solicitacao/formulario";
@@ -98,8 +98,8 @@ public class SolicitacaoController {
 	    try {
 	    	Solicitacao solicitacaoSalva = solicitacaoService.salvarOuAtualizar(dto);
 	        String mensagem = dto.id() != null 
-	            ? "Solicitação '" + solicitacaoSalva.getId() + "' atualizada com sucesso!"
-	            : "Solicitação '" + solicitacaoSalva.getId() + "' criada com sucesso!";
+	            ? "Solicitação atualizada com sucesso!"
+	            : "Solicitação criada com sucesso!";
 	        redirectAttributes.addFlashAttribute("message", mensagem);
 	        return "redirect:/solicitacao";
 	    } catch (EntityNotFoundException e) {

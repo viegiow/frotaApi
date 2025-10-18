@@ -3,6 +3,7 @@ package com.example.frota.solicitacao;
 import com.example.frota.caixa.Caixa;
 import com.example.frota.produto.Produto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,8 +32,11 @@ public class Solicitacao {
 	@OneToOne
 	@JoinColumn(name="caixa_id")
 	private Caixa caixa;
+	@Column(nullable=true)
 	private double frete;
+	@Column(nullable=true)
 	private double pedagio;
+	@Column(nullable=true)
 	private double custoKm;
 	private String enderecoPartida;
 	private String enderecoDestino;
