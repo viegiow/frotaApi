@@ -6,7 +6,7 @@
 <header th:replace="~{fragmentos/header :: header(activePage='Solicitacao')}"></header>
 	<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
 		<h2 class="text-center"
-			th:text="${solicitacao!= null} ? 'Editar Solicitacao' : 'Lista Solicitacao'"></h2>
+			th:text="${solicitacao != null and solicitacao.id != null} ? 'Editar Solicitacao' : 'Lista Solicitacao'"></h2>
 		<div th:if="${message != null}"
 			class="alert alert-success alert-dismissible fade show text-center"
 			role="alert">
@@ -21,6 +21,7 @@
 	    <table class="table table-hover table-responsive-xl">
 	        <thead class="thead-light">
 	            <tr>
+	            	<th scope="col">Id</th>
 	            	<th scope="col">Produto</th>
 	                <th scope="col">Caixa</th>
                 	<th scope="col">Endereço de Partida</th>
@@ -31,6 +32,7 @@
 	        </thead>
 	        <tbody>
 	            <tr th:each="solicitacao : ${listaSolicitacoes}">
+	            	<td th:text="${solicitacao.id}"></td>
 	            	<td th:text="${solicitacao.produto.nome}"></td>
 	                <td th:text="${solicitacao.caixa.material}"></td>
 	                <td th:text="${solicitacao.enderecoPartida}"></td>
