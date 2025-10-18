@@ -53,12 +53,12 @@ public class SolicitacaoController {
             dto = solicitacaoMapper.toAtualizacaoDto(solicitacao);
         } else {
             // criação: DTO vazio
-            dto = new AtualizacaoSolicitacao(null, "", "", null, null, 0, 0);
+            dto = new AtualizacaoSolicitacao(null, "", "", null, null);
         }
         model.addAttribute("solicitacao", dto);
         model.addAttribute("produtos", produtoService.procurarTodas());
         model.addAttribute("caixas", caixaService.procurarTodas());
-        return "produto/formulario";
+        return "solicitacao/formulario";
     }
 	
 	@GetMapping ("/formulario/{id}")    
@@ -68,7 +68,7 @@ public class SolicitacaoController {
 		try {
 			if(id != null) {
 				Solicitacao solicitacao = solicitacaoService.procurarPorId(id)
-						.orElseThrow(() -> new EntityNotFoundException("Caminhao não encontrado"));
+						.orElseThrow(() -> new EntityNotFoundException("Solicitação não encontrada"));
 				model.addAttribute("produtos", produtoService.procurarTodas());
 		        model.addAttribute("caixas", caixaService.procurarTodas());
 				//mapear caminhão para AtualizacaoCaminhao

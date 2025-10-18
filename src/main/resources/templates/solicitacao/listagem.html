@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: head('Listagem Solicitacao')}"></head>
+<body>
+<header th:replace="~{fragmentos/header :: header(activePage='Solicitacao')}"></header>
+	<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+		<h2 class="text-center"
+			th:text="${solicitacao!= null} ? 'Editar Solicitacao' : 'Lista Solicitacao'"></h2>
+		<div th:if="${message != null}"
+			class="alert alert-success alert-dismissible fade show text-center"
+			role="alert">
+			[[${message}]]
+			<button type="button" class="close btn-sm" data-dismiss="alert"
+				aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+    <a href="/solicitacao/formulario">Novo</a>
+    <div th:if="${listaSolicitacoes.size() > 0}">
+	    <table class="table table-hover table-responsive-xl">
+	        <thead class="thead-light">
+	            <tr>
+	            	<th scope="col">Produto</th>
+	                <th scope="col">Caixa</th>
+                	<th scope="col">Endereço de Partida</th>
+               		<th scope="col">Endereço de Destino</th>
+                	<th scope="col">Frete</th>
+	                <th scope="col">Ações</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr th:each="solicitacao : ${listaSolicitacoes}">
+	            	<td th:text="${solicitacao.produto.nome}"></td>
+	                <td th:text="${solicitacao.caixa.material}"></td>
+	                <td th:text="${solicitacao.enderecoPartida}"></td>
+	                <td th:text="${solicitacao.enderecoDestino}"></td>
+	                <td th:text="${solicitacao.frete}"></td>
+	               
+					<td><a th:href="@{'/solicitacao/formulario/' + ${solicitacao.id}}"
+							title="Editar a Solicitacao"
+							class="fa-regular fa-pen-to-square icon-dark"></a> &nbsp; <a
+							th:href="@{'/solicitacao/delete/' + ${solicitacao.id}}"
+							th:caixaTitle="${solicitacao.nome}" id="btnDelete"
+							title="Apague esta solicitacao"
+							class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+					</td>
+	            </tr>
+	        </tbody>
+	    </table>
+	  </div>
+    </div>
+	<div th:replace="fragmentos/footer :: footer"></div>
+</body>
+</html>

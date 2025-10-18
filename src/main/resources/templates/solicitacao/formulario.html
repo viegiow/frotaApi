@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: head('Manter Solicitação')}"></head>
+<body>
+	<header
+		th:replace="~{fragmentos/header :: header(activePage='Solicitação')}"></header>
+	<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+		<h2 class="text-center"
+			th:text="(${solicitacao != null} ? 'Editar Solicitação' : 'Novo Solicitação')"></h2>
+		<div th:if="${message != null}"
+			class="alert alert-success alert-dismissible fade show text-center"
+			role="alert">
+			[[${message}]]
+			<button type="button" class="close btn-sm" data-dismiss="alert"
+				aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+		<form th:action="@{/solicitacao/salvar}" th:object="${solicitacao}"
+			method="post" >
+			<input type="hidden" th:field="*{id}" />
+	
+			<div class="form-group" style="margin-top: 20px;">
+				<label>Escolha um Produto:</label> 
+				<select th:field="*{produtoId}" 
+					class="form-control"
+					th:classappend="${#fields.hasErrors('produtoId')} ? 'is-invalid'">	
+					<option value="">-Selecione um Produto-</option>
+					<option th:each="produto : ${produtos}"
+					    th:value="${produto.id}"
+						th:text="${produto.nome}"></option>
+				</select>
+				<div th:errors="*{produtoId}" class="invalid-feedback"></div>
+			</div>
+			<div class="form-group" style="margin-top: 20px;">
+				<label>Escolha uma Caixa:</label> 
+				<select th:field="*{caixaId}" 
+					class="form-control"
+					th:classappend="${#fields.hasErrors('caixaId')} ? 'is-invalid'">	
+					<option value="">-Selecione um Produto-</option>
+					<option th:each="caixa : ${caixas}"
+					    th:value="${caixa.id}"
+						th:text="${caixa.material}"></option>
+				</select>
+				<div th:errors="*{caixaId}" class="invalid-feedback"></div>
+			</div>
+			
+			<div class="form-group">
+				<label for="enderecoPartida"> Endereço de Partida: </label> 
+				<input class="form-control" type="text" th:field="*{enderecoPartida}"
+					th:classappend="${#fields.hasErrors('enderecoPartida')} ? 'is-invalid'">
+					<div th:errors="*{enderecoPartida}" class="invalid-feedback"></div>
+			</div>
+			<div class="form-group">
+				<label for="enderecoDestino"> Endereço de Destino: </label> <input
+					class="form-control" type="text"
+					th:field="*{enderecoDestino}"
+					th:classappend="${#fields.hasErrors('enderecoDestino')} ? 'is-invalid'">
+				<div th:errors="*{enderecoDestino}" class="invalid-feedback"></div>
+			</div>
+			<button type="submit" class="btn btn-primary">
+                <span th:text="${solicitacao.id != null} ? 'Atualizar' : 'Cadastrar'"></span>
+            </button>
+             <a th:href="@{/solicitacao}" class="btn btn-secondary">Cancelar</a>
+		</form>
+	</div>
+	<div th:replace="~{fragmentos/footer :: footer}"></div>
+</body>
+</html>

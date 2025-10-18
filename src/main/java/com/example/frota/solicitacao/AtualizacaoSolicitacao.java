@@ -9,9 +9,6 @@ public record AtualizacaoSolicitacao(
 		String enderecoPartida,
 		String enderecoDestino,
 		Long produtoId,
-		Long caixaId,
-		@NotNull
-		double pedagio,
-		double custoKm) {
+		Long caixaId) {
 
 }
