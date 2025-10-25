@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.frota.caminhao.AtualizacaoCaminhao;
-import com.example.frota.caminhao.Caminhao;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -59,7 +57,7 @@ public class MarcaController {
 		try {
 			if(id != null) {
 				Marca marca = marcaService.procurarPorId(id)
-						.orElseThrow(() -> new EntityNotFoundException("Caminhao não encontrado"));
+						.orElseThrow(() -> new EntityNotFoundException("Marca não encontrada"));
 				//mapear caminhão para AtualizacaoCaminhao
 				dto = marcaMapper.toAtualizacaoDto(marca);
 				model.addAttribute("marca", dto);
@@ -74,12 +72,13 @@ public class MarcaController {
 	
 
 	@PostMapping("/salvar")
-    public String salvar(@ModelAttribute("caminhao") @Valid DadosAtualizacaoMarca dto,
+    public String salvar(@ModelAttribute("marca") @Valid DadosAtualizacaoMarca dto,
                         BindingResult result,
                         RedirectAttributes redirectAttributes,
                         Model model) {
 		if (result.hasErrors()) {
 	        // Recarrega dados necessários para mostrar erros
+			System.out.println(result);
 	        return "marca/formulario";
 	    }
 	    try {
