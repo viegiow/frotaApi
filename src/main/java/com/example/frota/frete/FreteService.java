@@ -1,10 +1,14 @@
 package com.example.frota.frete;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,13 +32,30 @@ public class FreteService {
         return peso * custoPorPeso;
     }
 
+    public static String removerAcentos(String str) {
+        if (str == null) return null;
+
+        // Normaliza para decompor caracteres acentuados
+        String normalizado = Normalizer.normalize(str, Normalizer.Form.NFD);
+
+        // Remove acentos e sinais diacríticos
+        String semAcentos = normalizado.replaceAll("\\p{M}", "");
+
+        return semAcentos;
+    }
+
     public Double calcularDistancia(String origem, String destino) {
         try {
             RestTemplate restTemplate = new RestTemplate();
+            //restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+
+            String origemEncoded = removerAcentos(origem);
+            String destinoEncoded = removerAcentos(destino);
+
 
             String url = UriComponentsBuilder.fromHttpUrl(BASE_URL)
-                    .queryParam("origins", origem)
-                    .queryParam("destinations", destino)
+                    .queryParam("origins", origemEncoded)
+                    .queryParam("destinations", destinoEncoded)
                     .queryParam("mode", "driving")
                     .queryParam("departure_time", "now")
                     .queryParam("key", API_KEY)
@@ -70,7 +91,7 @@ public class FreteService {
         }
     }
 
-    public double calcularCustoPorDistancia(double distancia) {
+    public Double calcularCustoPorDistancia(double distancia) {
         final double custoPorDistancia = 3;
         return distancia * custoPorDistancia;
     }
