@@ -32,9 +32,9 @@ public class Solicitacao {
 	@OneToOne
 	@JoinColumn(name="caixa_id")
 	private Caixa caixa;
-	private double frete;
-	private double pedagio;
-	private double custoKm;
+	private Double frete;
+	private Double pedagio;
+	private Double custoKm;
 	private String enderecoPartida;
 	private String enderecoDestino;
 }

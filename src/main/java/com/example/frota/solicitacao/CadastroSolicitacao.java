@@ -7,9 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CadastroSolicitacao(
-		double pedagio,
-		double custoKm,
-		double frete,
+		Double pedagio,
+		Double custoKm,
+		Double frete,
 		@NotBlank
 		String enderecoPartida,
 		String enderecoDestino,

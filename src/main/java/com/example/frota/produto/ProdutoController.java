@@ -93,7 +93,7 @@ public class ProdutoController {
 	public String deleteTutorial(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
 		try {
 			produtoService.apagarPorId(id);
-			redirectAttributes.addFlashAttribute("message", "O produto " + id + " foi apagado!");
+			redirectAttributes.addFlashAttribute("message", "O produto foi apagado!");
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}

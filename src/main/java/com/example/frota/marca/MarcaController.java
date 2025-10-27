@@ -99,7 +99,7 @@ public class MarcaController {
 	public String deleteTutorial(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
 		try {
 			marcaService.apagarPorId(id);
-			redirectAttributes.addFlashAttribute("message", "A marca " + id + " foi apagada!");
+			redirectAttributes.addFlashAttribute("message", "A marca foi apagada!");
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}

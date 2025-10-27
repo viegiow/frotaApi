@@ -2,94 +2,106 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragmentos/head :: head('Manter Solicitação')}"></head>
 <body>
-	<header
-		th:replace="~{fragmentos/header :: header(activePage='Solicitação')}"></header>
+	<header th:replace="~{fragmentos/header :: header(activePage='Solicitação')}"></header>
+
 	<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
 		<h2 class="text-center"
-			th:text="(${solicitacao.id != null} ? 'Editar Solicitação' : 'Novo Solicitação')"></h2>
-		<div th:if="${message != null}"
-			class="alert alert-success alert-dismissible fade show text-center"
-			role="alert">
-			[[${message}]]
-			<button type="button" class="close btn-sm" data-dismiss="alert"
-				aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-		</div>
+			th:text="(${solicitacao.id != null} ? 'Editar Solicitação' : 'Nova Solicitação')"></h2>
 
-		<form th:action="@{/solicitacao/salvar}" th:object="${solicitacao}"
-			method="post" >
+		<form th:action="@{/solicitacao/salvar}" th:object="${solicitacao}" method="post">
 			<input type="hidden" th:field="*{id}" />
-	
+
+			<!-- Produto -->
 			<div class="form-group" style="margin-top: 20px;">
 				<label>Escolha um Produto:</label> 
-				<select th:field="*{produtoId}" 
-					class="form-control"
-					th:classappend="${#fields.hasErrors('produtoId')} ? 'is-invalid'">	
+				<select th:field="*{produtoId}" class="form-control">
 					<option value="">-Selecione um Produto-</option>
 					<option th:each="produto : ${produtos}"
-					    th:value="${produto.id}"
-						th:text="${produto.nome}"></option>
+					        th:value="${produto.id}"
+					        th:data-peso="${produto.pesoProduto}"   
+					        th:text="${produto.nome}"></option>
 				</select>
-				<div th:errors="*{produtoId}" class="invalid-feedback"></div>
 			</div>
+
+			<!-- Caixa -->
 			<div class="form-group" style="margin-top: 20px;">
 				<label>Escolha uma Caixa:</label> 
-				<select th:field="*{caixaId}" 
-					class="form-control"
-					th:classappend="${#fields.hasErrors('caixaId')} ? 'is-invalid'">	
-					<option value="">-Selecione um Produto-</option>
+				<select th:field="*{caixaId}" class="form-control">
+					<option value="">-Selecione uma Caixa-</option>
 					<option th:each="caixa : ${caixas}"
-					    th:value="${caixa.id}"
-						th:text="${caixa.material}"></option>
+					        th:value="${caixa.id}"
+					        th:text="${caixa.material}"></option>
 				</select>
-				<div th:errors="*{caixaId}" class="invalid-feedback"></div>
 			</div>
-			
+
+			<!-- Endereços -->
 			<div class="form-group">
-				<label for="enderecoPartida"> Endereço de Partida: </label> 
-				<input class="form-control" type="text" th:field="*{enderecoPartida}"
-					th:classappend="${#fields.hasErrors('enderecoPartida')} ? 'is-invalid'">
-					<div th:errors="*{enderecoPartida}" class="invalid-feedback"></div>
+				<label for="enderecoPartida">Endereço de Partida:</label> 
+				<input class="form-control" type="text" th:field="*{enderecoPartida}">
 			</div>
+
 			<div class="form-group">
-				<label for="enderecoDestino"> Endereço de Destino: </label> <input
-					class="form-control" type="text"
-					th:field="*{enderecoDestino}"
-					th:classappend="${#fields.hasErrors('enderecoDestino')} ? 'is-invalid'">
-				<div th:errors="*{enderecoDestino}" class="invalid-feedback"></div>
+				<label for="enderecoDestino">Endereço de Destino:</label> 
+				<input class="form-control" type="text" th:field="*{enderecoDestino}">
 			</div>
-			
+
+			<!-- Campo calculado -->
 			<div class="form-group">
-				<label for="frete"> Frete: </label> <input
-					class="form-control" type="number"
-					th:field="*{frete}"
-					th:classappend="${#fields.hasErrors('frete')} ? 'is-invalid'">
-				<div th:errors="*{frete}" class="invalid-feedback"></div>
+				<label for="frete">Frete (R$):</label> 
+				<input class="form-control" type="number" step="0.01" th:field="*{frete}" readonly>
+				<div id="frete-spinner" style="display: none; margin-top: 5px;">
+			        <span class="spinner-border spinner-border-sm"></span> Calculando...
+			    </div>
 			</div>
-			
-			<div class="form-group">
-				<label for="pedagio"> Pedágio: </label> <input
-					class="form-control" type="number"
-					th:field="*{pedagio}"
-					th:classappend="${#fields.hasErrors('pedagio')} ? 'is-invalid'">
-				<div th:errors="*{pedagio}" class="invalid-feedback"></div>
-			</div>
-			
-			<div class="form-group">
-				<label for="custoKm"> Custo por KM: </label> <input
-					class="form-control" type="number"
-					th:field="*{custoKm}"
-					th:classappend="${#fields.hasErrors('custoKm')} ? 'is-invalid'">
-				<div th:errors="*{custoKm}" class="invalid-feedback"></div>
-			</div>
-			
+
+			<!-- Botões -->
 			<button type="submit" class="btn btn-primary">
-                <span th:text="${solicitacao.id != null} ? 'Atualizar' : 'Cadastrar'"></span>
-            </button>
-             <a th:href="@{/solicitacao}" class="btn btn-secondary">Cancelar</a>
+				<span th:text="${solicitacao.id != null} ? 'Atualizar' : 'Cadastrar'"></span>
+			</button>
+			<a th:href="@{/solicitacao}" class="btn btn-secondary">Cancelar</a>
 		</form>
 	</div>
+
 	<div th:replace="~{fragmentos/footer :: footer}"></div>
+
+	<script>
+	async function calcularFrete() {
+	    const partida = document.querySelector('[name="enderecoPartida"]').value;
+	    const destino = document.querySelector('[name="enderecoDestino"]').value;
+	    const produtoSelect = document.querySelector('[name="produtoId"]');
+	    const produtoPeso = produtoSelect.selectedOptions[0]?.getAttribute('data-peso');
+
+	    if (partida && destino && produtoPeso) {
+	    	const spinner = document.getElementById("frete-spinner");
+            spinner.style.display = "inline-block";
+            
+	        try {
+
+	        	
+	            const params = new URLSearchParams({
+	                origem: partida,
+	                destino: destino,
+	                peso: produtoPeso
+	            });
+	            
+	            const response = await fetch(`/frete?${params}`);
+	            if (!response.ok) throw new Error('Erro ao calcular frete');
+
+	            const valorFrete = await response.json();
+
+	            document.querySelector('[name="frete"]').value = valorFrete.toFixed(2);
+	        } catch (error) {
+	            console.error(error);
+	            alert('Erro ao calcular o frete!');
+	        } finally {
+	        	spinner.style.display = "none"; 
+	        }
+	    }
+	}
+
+	document.querySelector('[name="enderecoPartida"]').addEventListener('blur', calcularFrete);
+	document.querySelector('[name="enderecoDestino"]').addEventListener('blur', calcularFrete);
+	document.querySelector('[name="produtoId"]').addEventListener('change', calcularFrete);
+	</script>
 </body>
 </html>

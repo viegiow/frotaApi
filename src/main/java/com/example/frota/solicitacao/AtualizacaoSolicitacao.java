@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record AtualizacaoSolicitacao(
 		Long id,
-		double pedagio,
-		double custoKm,
-		double frete,
+		Double pedagio,
+		Double custoKm,
+		Double frete,
 		@NotBlank
 		String enderecoPartida,
 		String enderecoDestino,

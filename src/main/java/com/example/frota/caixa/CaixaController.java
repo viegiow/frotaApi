@@ -96,7 +96,7 @@ public class CaixaController {
 	public String deleteTutorial(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
 		try {
 			caixaService.apagarPorId(id);
-			redirectAttributes.addFlashAttribute("message", "A caixa " + id + " foi apagada!");
+			redirectAttributes.addFlashAttribute("message", "A caixa foi apagada!");
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}

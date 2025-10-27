@@ -108,12 +108,41 @@ public class SolicitacaoController {
 	    }
 	}
 	
+//	@PostMapping("/calcularFrete")
+//	public <Optional> String calcularFrete(@ModelAttribute("solicitacao") @Valid AtualizacaoSolicitacao dto,
+//            BindingResult result,
+//            RedirectAttributes redirectAttributes,
+//            Model model) {
+//		if (result.hasErrors()) {
+//	        // Recarrega dados necessários para mostrar erros
+//			System.out.println(result);
+//			model.addAttribute("solicitacao", dto);
+//			model.addAttribute("produtos", produtoService.procurarTodas());
+//	        model.addAttribute("caixas", caixaService.procurarTodas());
+//	        return "solicitacao/formulario";
+//	    }
+//	    try {
+//	        model.addAttribute("produtos", produtoService.procurarTodas());
+//	        model.addAttribute("caixas", caixaService.procurarTodas());
+//	        model.addAttribute("message", "Frete calculado com sucesso!");
+//	    	model.addAttribute("solicitacao", dto);
+//	        String mensagem = dto.id() != null 
+//	            ? "Frete atualizado com sucesso!"
+//	            : "Frete calculado com sucesso!";
+//	        redirectAttributes.addFlashAttribute("message", mensagem);
+//	        return "solicitacao/formulario";
+//	    } catch (EntityNotFoundException e) {
+//	        redirectAttributes.addFlashAttribute("error", e.getMessage());
+//	        return "redirect:/solicitacao/formulario" + (dto.id() != null ? "?id=" + dto.id() : "");
+//	    }
+//	}
+	
 	@GetMapping("/delete/{id}")
 	@Transactional
 	public String deleteTutorial(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
 		try {
 			solicitacaoService.apagarPorId(id);
-			redirectAttributes.addFlashAttribute("message", "A solicitação " + id + " foi apagada!");
+			redirectAttributes.addFlashAttribute("message", "A solicitação foi apagada!");
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}

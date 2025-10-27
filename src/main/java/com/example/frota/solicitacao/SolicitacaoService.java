@@ -42,10 +42,7 @@ public class SolicitacaoService {
 			existente.setProduto(produto); // Atualiza a marca
 			existente.setCaixa(caixa);
 			
-			// precisa atualizar essa parte
-			existente.setPedagio(1.0);
-			existente.setCustoKm(1.0);
-			existente.setFrete(1.0);
+			
 			return solicitacaoRepository.save(existente);
 		} else {
 			// criando Novo caminhão
@@ -53,15 +50,10 @@ public class SolicitacaoService {
 			novaSolicitacao.setProduto(produto); // Define a marca completa
 			novaSolicitacao.setCaixa(caixa);
 			
-			// precisa atualizar essa parte
-			novaSolicitacao.setPedagio(1.0);
-			novaSolicitacao.setCustoKm(1.0);
-			novaSolicitacao.setFrete(1.0);
-
 			return solicitacaoRepository.save(novaSolicitacao);
 		}
 	}
-
+	
 	public List<Solicitacao> procurarTodos(){
 		return solicitacaoRepository.findAll(Sort.by("frete").ascending());
 	}
