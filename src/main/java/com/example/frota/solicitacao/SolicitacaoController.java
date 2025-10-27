@@ -69,7 +69,6 @@ public class SolicitacaoController {
 						.orElseThrow(() -> new EntityNotFoundException("Solicitação não encontrada"));
 				model.addAttribute("produtos", produtoService.procurarTodas());
 		        model.addAttribute("caixas", caixaService.procurarTodas());
-				//mapear caminhão para AtualizacaoCaminhao
 				dto = solicitacaoMapper.toAtualizacaoDto(solicitacao);
 				model.addAttribute("solicitacao", dto);
 			}
@@ -146,6 +145,6 @@ public class SolicitacaoController {
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}
-		return "redirect:/caminhao";
+		return "redirect:/solicitacao";
 	}
 }
