@@ -1,5 +1,6 @@
 package com.example.frota.frete;
 
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
@@ -35,54 +36,53 @@ public class FreteService {
     public static String removerAcentos(String str) {
         if (str == null) return null;
 
-        // Normaliza para decompor caracteres acentuados
         String normalizado = Normalizer.normalize(str, Normalizer.Form.NFD);
 
-        // Remove acentos e sinais diacríticos
         String semAcentos = normalizado.replaceAll("\\p{M}", "");
 
         return semAcentos;
     }
 
+    
     public Double calcularDistancia(String origem, String destino) {
         try {
             RestTemplate restTemplate = new RestTemplate();
-            //restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
-            String origemEncoded = removerAcentos(origem);
+            String origemEncoded  = removerAcentos(origem);
             String destinoEncoded = removerAcentos(destino);
 
-
-            String url = UriComponentsBuilder.fromHttpUrl(BASE_URL)
+            URI uri = UriComponentsBuilder
+                    .fromUriString(BASE_URL) 
                     .queryParam("origins", origemEncoded)
                     .queryParam("destinations", destinoEncoded)
                     .queryParam("mode", "driving")
                     .queryParam("departure_time", "now")
                     .queryParam("key", API_KEY)
-                    .toUriString();
+                    .encode(StandardCharsets.UTF_8)   
+                    .build()
+                    .toUri();
 
-            String respostaJson = restTemplate.getForObject(url, String.class);
+            String respostaJson = restTemplate.getForObject(uri, String.class);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(respostaJson);
 
-            // Caminho: rows[0].elements[0].distance.value (em metros)
-            JsonNode distanceValueNode = root
-                    .path("rows")
-                    .get(0)
-                    .path("elements")
-                    .get(0)
-                    .path("distance")
-                    .path("value");
+            JsonNode rows = root.path("rows");
+            if (!rows.isArray() || rows.isEmpty()) return null;
 
-            if (distanceValueNode.isMissingNode()) {
-                return null; // ou lançar exceção customizada
+            JsonNode elements0 = rows.get(0).path("elements");
+            if (!elements0.isArray() || elements0.isEmpty()) return null;
+
+            String elementStatus = elements0.get(0).path("status").asText();
+            if (!"OK".equals(elementStatus)) {
+                return null;
             }
 
-            // Converte metros → quilômetros (ex: 96300 → 96.3)
+            JsonNode distanceValueNode = elements0.get(0).path("distance").path("value");
+            if (distanceValueNode.isMissingNode() || !distanceValueNode.isNumber()) return null;
+
             double distanciaKm = distanceValueNode.asDouble() / 1000.0;
 
-            // Opcional: arredondar para 2 casas decimais
             return Math.round(distanciaKm * 100.0) / 100.0;
 
         } catch (Exception e) {
