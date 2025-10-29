@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
+import com.example.frota.frete.FreteService;
 import com.example.frota.produto.Produto;
 import com.example.frota.produto.ProdutoService;
 
@@ -27,6 +28,9 @@ public class SolicitacaoService {
 
 	@Autowired
 	private CaixaService caixaService;
+	
+	@Autowired
+	private FreteService freteService;
 
 	public Solicitacao salvarOuAtualizar(AtualizacaoSolicitacao dto) {
 		// Valida se a marca existe
@@ -34,6 +38,12 @@ public class SolicitacaoService {
 				.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado com ID: " + dto.produtoId()));
 		Caixa caixa = caixaService.procurarPorId(dto.caixaId())
 				.orElseThrow(() -> new EntityNotFoundException("Caixa não encontrada com ID: " + dto.caixaId()));
+		
+		Double distancia = freteService.calcularDistancia(dto.enderecoPartida(), dto.enderecoDestino() );
+		Double totalPeso = freteService.calcularValorPorPeso(dto.produtoId(), dto.caixaId());
+        Double custoDistancia =  freteService.calcularCustoPorDistancia(distancia) ;
+		Double custoFrete = totalPeso + custoDistancia;
+		
 		if (dto.id() != null) {
 			// atualizando Busca existente e atualiza
 			Solicitacao existente = solicitacaoRepository.findById(dto.id())
@@ -41,7 +51,7 @@ public class SolicitacaoService {
 			solicitacaoMapper.updateEntityFromDto(dto, existente);
 			existente.setProduto(produto); // Atualiza a marca
 			existente.setCaixa(caixa);
-			
+			existente.setFrete(custoFrete);
 			
 			return solicitacaoRepository.save(existente);
 		} else {
@@ -49,6 +59,7 @@ public class SolicitacaoService {
 			Solicitacao novaSolicitacao = solicitacaoMapper.toEntityFromAtualizacao(dto);
 			novaSolicitacao.setProduto(produto); // Define a marca completa
 			novaSolicitacao.setCaixa(caixa);
+			novaSolicitacao.setFrete(custoFrete);
 			
 			return solicitacaoRepository.save(novaSolicitacao);
 		}

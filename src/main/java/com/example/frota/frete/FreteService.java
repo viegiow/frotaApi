@@ -50,7 +50,7 @@ public class FreteService {
         return pesoConsiderado * custoPorPeso;
     }
 
-    public static String removerAcentos(String str) {
+    public  String removerAcentos(String str) {
         if (str == null) return null;
 
         String normalizado = Normalizer.normalize(str, Normalizer.Form.NFD);

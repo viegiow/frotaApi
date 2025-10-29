@@ -29,6 +29,11 @@ public class ProdutoService {
         }
     }
 	
+	public List<Produto> buscarProdutosSemSolicitacao() {
+	    return produtoRepository.findProdutosSemSolicitacao();
+	}
+
+	
 	public List<Produto> procurarTodas() {
 		return produtoRepository.findAll();
 	}

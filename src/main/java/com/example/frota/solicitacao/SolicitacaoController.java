@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
+import com.example.frota.produto.Produto;
 import com.example.frota.produto.ProdutoService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -53,12 +54,14 @@ public class SolicitacaoController {
             Solicitacao solicitacao = solicitacaoService.procurarPorId(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitação não encontrada"));
             dto = solicitacaoMapper.toAtualizacaoDto(solicitacao);
+            model.addAttribute("produtos", produtoService.procurarTodas());
         } else {
             // criação: DTO vazio
             dto = new AtualizacaoSolicitacao(null, 0.0, 0.0, 0.0, null, null, null, null);
+            model.addAttribute("produtos", produtoService.buscarProdutosSemSolicitacao());
         }
         model.addAttribute("solicitacao", dto);
-        model.addAttribute("produtos", produtoService.procurarTodas());
+//        model.addAttribute("produtos", produtoService.procurarTodas());
 //        model.addAttribute("caixas", caixaService.procurarTodas());
         return "solicitacao/formulario";
     }
@@ -93,7 +96,12 @@ public class SolicitacaoController {
 	    return caixaService.procurarCompativeis(produto.getComprimento(), produto.getAltura(), produto.getLargura(), produto.getPesoProduto());
 	}
 
-	
+	@GetMapping("/produtos-disponiveis")
+	@ResponseBody
+	public List<Produto> listarProdutosDisponiveis() {
+	    return produtoService.buscarProdutosSemSolicitacao();
+	}
+
 
 	@PostMapping("/salvar")
     public String salvar(@ModelAttribute("solicitacao") @Valid AtualizacaoSolicitacao dto,

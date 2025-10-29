@@ -18,8 +18,8 @@
                 <option value="">-Selecione um Produto-</option>
                 <option th:each="produto : ${produtos}"
                         th:value="${produto.id}"
-                        th:data-peso="${produto.pesoProduto}"
-                        th:text="${produto.nome}">
+                        th:text="${produto.nome}"
+                        th:selected="${solicitacao.produtoId} == ${produto.id}">>
                 </option>
             </select>
         </div>
@@ -132,6 +132,26 @@ function carregarCaixas() {
         });
 }
 </script>
-
+<!-- SCRIPT: Carregar produtos sem solicitação -->
+<script th:if="${solicitacao.id == null}">
+document.addEventListener("DOMContentLoaded", () => {
+    const produtoSelect = document.getElementById("produtoId");
+    fetch("/solicitacao/produtos-disponiveis")
+        .then(response => response.json())
+        .then(produtos => {
+            produtoSelect.innerHTML = '<option value="">-Selecione um Produto-</option>';
+            produtos.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.id;
+                opt.text = p.nome;
+                produtoSelect.appendChild(opt);
+            });
+        })
+        .catch(err => {
+            console.error("Erro ao carregar produtos:", err);
+            produtoSelect.innerHTML = '<option value="">Erro ao carregar produtos</option>';
+        });
+});
+</script>
 </body>
 </html>
