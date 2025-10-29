@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: head('Listagem Parâmetro')}"></head>
+<body>
+<header th:replace="~{fragmentos/header :: header(activePage='Caixa')}"></header>
+	<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+		<h2 class="text-center"
+			th:text="${parametro!= null} ? 'Editar Parâmetro' : 'Lista Parâmetro'"></h2>
+		<div th:if="${message != null}"
+			class="alert alert-success alert-dismissible fade show text-center"
+			role="alert">
+			[[${message}]]
+			<button type="button" class="close btn-sm" data-dismiss="alert"
+				aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+    <a href="/parametro/formulario">Novo</a>
+    <div th:if="${listaParametros.size() > 0}">
+	    <table class="table table-hover table-responsive-xl">
+	        <thead class="thead-light">
+	            <tr>
+	            	<th scope="col">Nome</th>
+	                <th scope="col">Valor</th>
+	                <th scope="col">Ações</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr th:each="parametro : ${listaParametros}">
+	            	<td th:text="${parametro.nome}"></td>
+	                <td th:text="${parametro.valor}"></td>
+
+	               
+					<td><a th:href="@{'/parametro/formulario/' + ${parametro.id}}"
+							title="Editar o parametro"
+							class="fa-regular fa-pen-to-square icon-dark"></a> &nbsp; <a
+							th:href="@{'/parametro/delete/' + ${parametro.id}}"
+							th:caixaTitle="${parametro.nome}" id="btnDelete"
+							title="Apague este parametro"
+							class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+					</td>
+	            </tr>
+	        </tbody>
+	    </table>
+	  </div>
+    </div>
+	<div th:replace="fragmentos/footer :: footer"></div>
+</body>
+</html>
