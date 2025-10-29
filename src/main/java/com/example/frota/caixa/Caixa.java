@@ -33,7 +33,7 @@ public class Caixa {
         if (fatorCubagem == null || comprimento == 0 || largura == 0 || altura == 0) {
             this.pesoCubado = null;
         } else {
-            this.pesoCubado = ((comprimento/100.0) * (largura/100.0) * (altura/100.0)) * 300;
+            this.pesoCubado = ((comprimento/100.0) * (largura/100.0) * (altura/100.0)) * fatorCubagem;
         }
     }
 
