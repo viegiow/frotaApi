@@ -37,6 +37,10 @@ public class FreteService {
 	
     private static final String API_KEY = "AIzaSyAP1IE7RV5OqTAGPNnw2NbI8jNesEnXT1Y";
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/distancematrix/json";
+    
+    private static final String API_KEY_HERE = "mcrxZoUUlLNigSmNNbAZQ1zx0xJ67_wZK23Vhp6SGck";
+    private static final String BASE_URL_HERE_GEO = "https://geocode.search.hereapi.com/v1/geocode";
+    private static final String BASE_URL_HERE = "https://router.hereapi.com/v8/routes";
 	
     public double calcularValorPorPeso(Long produtoId, Long caixaId) {
         final double custoPorPeso = 2.5;
@@ -50,7 +54,8 @@ public class FreteService {
         return pesoConsiderado * custoPorPeso;
     }
 
-    public  String removerAcentos(String str) {
+    
+    public static String removerAcentos(String str) {
         if (str == null) return null;
 
         String normalizado = Normalizer.normalize(str, Normalizer.Form.NFD);
@@ -60,6 +65,81 @@ public class FreteService {
         return semAcentos;
     }
 
+    public double[] obterCoordenadas(RestTemplate restTemplate, String endereco) throws Exception {
+    	try {
+    		String enderecoEncoded  = removerAcentos(endereco);
+    		
+    		URI uri = UriComponentsBuilder
+    				.fromUriString(BASE_URL_HERE_GEO) 
+                    .queryParam("q", enderecoEncoded)
+                    .queryParam("apikey", API_KEY_HERE)
+                    .build()
+                    .toUri();
+    		
+    		String response = restTemplate.getForObject(uri, String.class);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+            JsonNode items = root.path("items");
+
+            if (!items.isArray() || items.isEmpty()) return null;
+            
+            double lat = items.get(0).path("position").path("lat").asDouble();
+            double lng = items.get(0).path("position").path("lng").asDouble();
+            
+            return new double[]{lat, lng};
+    	} catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public Double calcularPedagios(String origem, String destino) {
+    	try {
+    		RestTemplate restTemplate = new RestTemplate();
+    		
+            double[] coordOrigem = obterCoordenadas(restTemplate, origem);
+            double[] coordDestino = obterCoordenadas(restTemplate, destino);
+            
+            if (coordOrigem == null || coordDestino == null)
+            	throw new RuntimeException("Erro ao obter coordenadas.");
+            		
+    		URI uri = UriComponentsBuilder
+    				.fromUriString(BASE_URL_HERE) 
+                    .queryParam("transportMode", "truck")
+                    .queryParam("origin", coordOrigem[0] + "," + coordOrigem[1])
+                    .queryParam("destination", coordDestino[0] + "," + coordDestino[1])
+                    .queryParam("return", "summary,tolls")
+                    .queryParam("apikey", API_KEY_HERE)
+                    .build()
+                    .toUri();
+    		
+    		String response = restTemplate.getForObject(uri, String.class);
+    		System.out.println(response);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+
+            JsonNode tolls = root.path("routes").get(0).path("sections").get(0).path("tolls");
+            
+            double totalTolls = 0.0;
+            if (tolls.isArray()) {
+                for (JsonNode toll : tolls) {
+                    JsonNode fares = toll.path("fares");
+                    if (fares.isArray()) {
+                        for (JsonNode fare : fares) {
+                            double valor = fare.path("price").path("value").asDouble(0.0);
+                            totalTolls += valor;
+                        }
+                    }
+                }
+            }
+            System.out.println(totalTolls);
+            return totalTolls;
+            
+    	} catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     
     public Double calcularDistancia(String origem, String destino) {
         try {
@@ -112,7 +192,5 @@ public class FreteService {
         final double custoPorDistancia = 3;
         return distancia * custoPorDistancia;
     }
-	
-	
 	
 }

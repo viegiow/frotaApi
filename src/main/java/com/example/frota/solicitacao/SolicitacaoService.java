@@ -39,10 +39,13 @@ public class SolicitacaoService {
 		Caixa caixa = caixaService.procurarPorId(dto.caixaId())
 				.orElseThrow(() -> new EntityNotFoundException("Caixa não encontrada com ID: " + dto.caixaId()));
 		
-		Double distancia = freteService.calcularDistancia(dto.enderecoPartida(), dto.enderecoDestino() );
-		Double totalPeso = freteService.calcularValorPorPeso(dto.produtoId(), dto.caixaId());
-        Double custoDistancia =  freteService.calcularCustoPorDistancia(distancia) ;
-		Double custoFrete = totalPeso + custoDistancia;
+        Double distancia = freteService.calcularDistancia(dto.enderecoPartida(), dto.enderecoDestino());
+        Double totalPeso = freteService.calcularValorPorPeso(dto.produtoId(), dto.caixaId());
+        Double custoDistancia =  freteService.calcularCustoPorDistancia(distancia);
+        Double pedagio = freteService.calcularPedagios(dto.enderecoPartida(), dto.enderecoDestino());
+        
+        Double custoFrete = totalPeso + custoDistancia + pedagio;
+        System.out.println("pedágio: " + pedagio + "totalPeso: " + totalPeso + "custoDistancia: " + custoDistancia + "custoFrete: " + custoFrete);
 		
 		if (dto.id() != null) {
 			// atualizando Busca existente e atualiza
