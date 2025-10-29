@@ -2,106 +2,136 @@
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragmentos/head :: head('Manter Solicitação')}"></head>
 <body>
-	<header th:replace="~{fragmentos/header :: header(activePage='Solicitação')}"></header>
+<header th:replace="~{fragmentos/header :: header(activePage='Solicitação')}"></header>
 
-	<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
-		<h2 class="text-center"
-			th:text="(${solicitacao.id != null} ? 'Editar Solicitação' : 'Nova Solicitação')"></h2>
+<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
+    <h2 class="text-center"
+        th:text="(${solicitacao.id != null} ? 'Editar Solicitação' : 'Nova Solicitação')"></h2>
 
-		<form th:action="@{/solicitacao/salvar}" th:object="${solicitacao}" method="post">
-			<input type="hidden" th:field="*{id}" />
+    <form th:action="@{/solicitacao/salvar}" th:object="${solicitacao}" method="post">
+        <input type="hidden" th:field="*{id}" />
 
-			<!-- Produto -->
-			<div class="form-group" style="margin-top: 20px;">
-				<label>Escolha um Produto:</label> 
-				<select th:field="*{produtoId}" class="form-control">
-					<option value="">-Selecione um Produto-</option>
-					<option th:each="produto : ${produtos}"
-					        th:value="${produto.id}"
-					        th:data-peso="${produto.pesoProduto}"   
-					        th:text="${produto.nome}"></option>
-				</select>
-			</div>
+        <!-- Produto -->
+        <div class="form-group" style="margin-top: 20px;">
+            <label for="produtoId">Escolha um Produto:</label>
+            <select id="produtoId" th:field="*{produtoId}" class="form-control" onchange="carregarCaixas()">
+                <option value="">-Selecione um Produto-</option>
+                <option th:each="produto : ${produtos}"
+                        th:value="${produto.id}"
+                        th:data-peso="${produto.pesoProduto}"
+                        th:text="${produto.nome}">
+                </option>
+            </select>
+        </div>
 
-			<!-- Caixa -->
-			<div class="form-group" style="margin-top: 20px;">
-				<label>Escolha uma Caixa:</label> 
-				<select th:field="*{caixaId}" class="form-control">
-					<option value="">-Selecione uma Caixa-</option>
-					<option th:each="caixa : ${caixas}"
-					        th:value="${caixa.id}"
-					        th:text="${caixa.material}"></option>
-				</select>
-			</div>
+        <!-- Caixa -->
+        <div class="form-group" style="margin-top: 20px;">
+            <label for="caixaId">Escolha uma Caixa:</label>
+            <select id="caixaId" th:field="*{caixaId}" class="form-control">
+                <option value="">-Selecione uma Caixa-</option>
+                <option th:each="caixa : ${caixas}"
+                        th:value="${caixa.id}"
+                        th:text="${caixa.material}"></option>
+            </select>
+        </div>
 
-			<!-- Endereços -->
-			<div class="form-group">
-				<label for="enderecoPartida">Endereço de Partida: (CEP ou endereço completo)</label> 
-				<input class="form-control" type="text" th:field="*{enderecoPartida}">
-			</div>
+        <!-- Endereços -->
+        <div class="form-group">
+            <label for="enderecoPartida">Endereço de Partida (CEP ou endereço completo):</label>
+            <input id="enderecoPartida" class="form-control" type="text" th:field="*{enderecoPartida}">
+        </div>
 
-			<div class="form-group">
-				<label for="enderecoDestino">Endereço de Destino: (CEP ou endereço completo)</label> 
-				<input class="form-control" type="text" th:field="*{enderecoDestino}">
-			</div>
+        <div class="form-group">
+            <label for="enderecoDestino">Endereço de Destino (CEP ou endereço completo):</label>
+            <input id="enderecoDestino" class="form-control" type="text" th:field="*{enderecoDestino}">
+        </div>
 
-			<!-- Campo calculado -->
-			<div class="form-group">
-				<label for="frete">Frete (R$):</label> 
-				<input class="form-control" type="number" step="0.01" th:field="*{frete}" readonly>
-				<div id="frete-spinner" style="display: none; margin-top: 5px;">
-			        <span class="spinner-border spinner-border-sm"></span> Calculando...
-			    </div>
-			</div>
+        <!-- Campo calculado -->
+        <div class="form-group">
+            <label for="frete">Frete (R$):</label>
+            <input id="frete" class="form-control" type="number" step="0.01" th:field="*{frete}" readonly>
+            <div id="frete-spinner" style="display: none; margin-top: 5px;">
+                <span class="spinner-border spinner-border-sm"></span> Calculando...
+            </div>
+        </div>
 
-			<!-- Botões -->
-			<button type="submit" class="btn btn-primary">
-				<span th:text="${solicitacao.id != null} ? 'Atualizar' : 'Cadastrar'"></span>
-			</button>
-			<a th:href="@{/solicitacao}" class="btn btn-secondary">Cancelar</a>
-		</form>
-	</div>
+        <!-- Botões -->
+        <button type="submit" class="btn btn-primary">
+            <span th:text="${solicitacao.id != null} ? 'Atualizar' : 'Cadastrar'"></span>
+        </button>
+        <a th:href="@{/solicitacao}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
 
-	<div th:replace="~{fragmentos/footer :: footer}"></div>
+<div th:replace="~{fragmentos/footer :: footer}"></div>
 
-	<script>
-	async function calcularFrete() {
-	    const partida = document.querySelector('[name="enderecoPartida"]').value;
-	    const destino = document.querySelector('[name="enderecoDestino"]').value;
-	    const produtoSelect = document.querySelector('[name="produtoId"]');
-	    const produtoPeso = produtoSelect.selectedOptions[0]?.getAttribute('data-peso');
+<!-- SCRIPT: Calcular Frete -->
+<script>
+async function calcularFrete() {
+    const partida = document.getElementById('enderecoPartida').value;
+    const destino = document.getElementById('enderecoDestino').value;
+    const produtoId = document.getElementById('produtoId').value;
+    const caixaId = document.getElementById('caixaId').value;
 
-	    if (partida && destino && produtoPeso) {
-	    	const spinner = document.getElementById("frete-spinner");
-            spinner.style.display = "inline-block";
-            
-	        try {
+    if (partida && destino && produtoId && caixaId) {
+        const spinner = document.getElementById("frete-spinner");
+        spinner.style.display = "inline-block";
 
-	        	
-	            const params = new URLSearchParams({
-	                origem: partida,
-	                destino: destino,
-	                peso: produtoPeso
-	            });
-	            
-	            const response = await fetch(`/frete?${params}`);
-	            if (!response.ok) throw new Error('Erro ao calcular frete');
+        try {
+            const params = new URLSearchParams({
+                origem: partida,
+                destino: destino,
+                produtoId: produtoId,
+                caixaId: caixaId
+            });
 
-	            const valorFrete = await response.json();
+            const response = await fetch(`/frete?${params}`);
+            if (!response.ok) throw new Error('Erro ao calcular frete');
 
-	            document.querySelector('[name="frete"]').value = valorFrete.toFixed(2);
-	        } catch (error) {
-	            console.error(error);
-	            alert('Erro ao calcular o frete!');
-	        } finally {
-	        	spinner.style.display = "none"; 
-	        }
-	    }
-	}
+            const valorFrete = await response.json();
+            document.getElementById('frete').value = valorFrete.toFixed(2);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao calcular o frete!');
+        } finally {
+            spinner.style.display = "none";
+        }
+    }
+}
 
-	document.querySelector('[name="enderecoPartida"]').addEventListener('blur', calcularFrete);
-	document.querySelector('[name="enderecoDestino"]').addEventListener('blur', calcularFrete);
-	document.querySelector('[name="produtoId"]').addEventListener('change', calcularFrete);
-	</script>
+document.getElementById('enderecoPartida').addEventListener('blur', calcularFrete);
+document.getElementById('enderecoDestino').addEventListener('blur', calcularFrete);
+document.getElementById('produtoId').addEventListener('change', calcularFrete);
+</script>
+
+<!-- SCRIPT: Carregar Caixas compatíveis -->
+<script>
+function carregarCaixas() {
+    const produtoId = document.getElementById("produtoId").value;
+    const caixaSelect = document.getElementById("caixaId");
+
+    if (!produtoId) {
+        caixaSelect.innerHTML = '<option value="">Selecione um produto primeiro</option>';
+        return;
+    }
+
+    fetch(`/solicitacao/caixas-por-produto?produtoId=${produtoId}`)
+        .then(response => response.json())
+        .then(caixas => {
+            caixaSelect.innerHTML = '<option value="">-Selecione uma Caixa-</option>';
+            caixas.forEach(c => {
+                const option = document.createElement("option");
+                option.value = c.id;
+                option.text = `${c.material} (${c.comprimento}x${c.altura}x${c.largura}) Peso máximo: ${c.limitePeso} Kgs`;
+                caixaSelect.appendChild(option);
+            });
+        })
+        .catch(err => {
+            console.error("Erro ao buscar caixas:", err);
+            caixaSelect.innerHTML = '<option value="">Erro ao carregar caixas</option>';
+        });
+}
+</script>
+
 </body>
 </html>

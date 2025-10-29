@@ -35,9 +35,9 @@ public class FreteController {
     }
 	
 	@GetMapping("")
-    public Double obterCustoDistancia(@RequestParam String origem, @RequestParam String destino, @RequestParam double peso) {
+    public Double obterCustoDistancia(@RequestParam String origem, @RequestParam String destino, @RequestParam Long produtoId, @RequestParam Long caixaId) {
 		Double distancia = freteService.calcularDistancia(origem, destino);
-		Double totalPeso = freteService.calcularValorPorPeso(peso);
+		Double totalPeso = freteService.calcularValorPorPeso(produtoId, caixaId);
         Double custoDistancia =  freteService.calcularCustoPorDistancia(distancia) ;
 		return totalPeso + custoDistancia;
     }

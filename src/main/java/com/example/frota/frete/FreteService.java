@@ -14,8 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.frota.caixa.Caixa;
+import com.example.frota.caixa.CaixaService;
 import com.example.frota.caminhao.AtualizacaoCaminhao;
 import com.example.frota.caminhao.Caminhao;
+import com.example.frota.produto.Produto;
+import com.example.frota.produto.ProdutoService;
+import com.example.frota.solicitacao.Solicitacao;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,13 +29,25 @@ import jakarta.validation.constraints.NotNull;
 
 @Service
 public class FreteService {
-
+	@Autowired
+	private CaixaService caixaService;
+	
+	@Autowired
+	private ProdutoService produtoService;
+	
     private static final String API_KEY = "AIzaSyAP1IE7RV5OqTAGPNnw2NbI8jNesEnXT1Y";
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/distancematrix/json";
 	
-    public double calcularValorPorPeso(double peso) {
+    public double calcularValorPorPeso(Long produtoId, Long caixaId) {
         final double custoPorPeso = 2.5;
-        return peso * custoPorPeso;
+        
+        Produto produto = produtoService.procurarPorId(produtoId)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+        Caixa caixa = caixaService.procurarPorId(caixaId)
+                .orElseThrow(() -> new EntityNotFoundException("Caixa não encontrada"));
+        
+        Double pesoConsiderado = produto.getPesoProduto() > caixa.getPesoCubado() ? produto.getPesoProduto() : caixa.getPesoCubado();
+        return pesoConsiderado * custoPorPeso;
     }
 
     public static String removerAcentos(String str) {

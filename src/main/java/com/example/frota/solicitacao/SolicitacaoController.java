@@ -1,5 +1,7 @@
 package com.example.frota.solicitacao;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,8 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
 import com.example.frota.produto.ProdutoService;
 
@@ -55,7 +59,7 @@ public class SolicitacaoController {
         }
         model.addAttribute("solicitacao", dto);
         model.addAttribute("produtos", produtoService.procurarTodas());
-        model.addAttribute("caixas", caixaService.procurarTodas());
+//        model.addAttribute("caixas", caixaService.procurarTodas());
         return "solicitacao/formulario";
     }
 	
@@ -79,6 +83,16 @@ public class SolicitacaoController {
 			return "redirect:/solicitacao";
 		}
 	}
+	
+	@GetMapping("/caixas-por-produto")
+	@ResponseBody
+	public List<Caixa> listarCaixasPorProduto(@RequestParam("produtoId") Long produtoId) {
+	    var produto = produtoService.procurarPorId(produtoId)
+	            .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+
+	    return caixaService.procurarCompativeis(produto.getComprimento(), produto.getAltura(), produto.getLargura(), produto.getPesoProduto());
+	}
+
 	
 
 	@PostMapping("/salvar")

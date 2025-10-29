@@ -2,6 +2,7 @@ package com.example.frota.caixa;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,19 @@ public class CaixaService {
             Caixa existente = caixaRepository.findById(dto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dto.id()));
             caixaMapper.updateEntityFromDto(dto, existente);
+            existente.setPesoCubado(null);
             return caixaRepository.save(existente);
         } else {
             Caixa novaCaixa = caixaMapper.toEntityFromAtualizacao(dto);
-            
+            novaCaixa.setPesoCubado(null);
             return caixaRepository.save(novaCaixa);
         }
     }
+	
+	public List<Caixa> procurarCompativeis(int comprimento, int altura, int largura, Double pesoMax) {
+	    return caixaRepository.findCompativeis(comprimento, altura, largura, pesoMax);
+	}
+
 	
 	public List<Caixa> procurarTodas() {
 		return caixaRepository.findAll();

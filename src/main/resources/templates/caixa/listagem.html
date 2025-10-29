@@ -26,6 +26,7 @@
                 	<th scope="col">Largura</th>
                		<th scope="col">Altura</th>
                 	<th scope="col">Limite de Peso</th>
+                	<th scope="col">Peso Cubado</th>
 	                <th scope="col">Ações</th>
 	            </tr>
 	        </thead>
@@ -36,7 +37,7 @@
 	                <td th:text="${caixa.largura}"></td>
 	                <td th:text="${caixa.altura}"></td>
 	                <td th:text="${caixa.limitePeso}"></td>
-	               
+	                <td th:text="${caixa.pesoCubado}"></td>
 					<td><a th:href="@{'/caixa/formulario/' + ${caixa.id}}"
 							title="Editar a Caixa"
 							class="fa-regular fa-pen-to-square icon-dark"></a> &nbsp; <a

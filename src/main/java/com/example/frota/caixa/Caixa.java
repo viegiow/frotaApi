@@ -25,11 +25,10 @@ public class Caixa {
 	private int altura;
 	private String material;
 	private int limitePeso;
-	private double pesoCubado;
-	private int fatorCubagem = 300;
+	private Double pesoCubado;
 	
-	public double getPesoCubado() {
-		if (this.comprimento == 0 || this.largura == 0 || this.altura == 0) {return 0.0;}
-		return ((this.comprimento/100.0) * (this.largura/100.0) * (this.altura/100.0)) * this.fatorCubagem;
+	public void setPesoCubado(Double pesoCubado) {
+		if (this.comprimento == 0 || this.largura == 0 || this.altura == 0) {this.pesoCubado = null;}
+		this.pesoCubado = ((this.comprimento/100.0) * (this.largura/100.0) * (this.altura/100.0)) * 300;
 	}
 }
