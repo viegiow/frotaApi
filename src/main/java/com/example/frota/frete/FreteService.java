@@ -18,6 +18,8 @@ import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
 import com.example.frota.caminhao.AtualizacaoCaminhao;
 import com.example.frota.caminhao.Caminhao;
+import com.example.frota.parametros.Parametro;
+import com.example.frota.parametros.ParametroService;
 import com.example.frota.produto.Produto;
 import com.example.frota.produto.ProdutoService;
 import com.example.frota.solicitacao.Solicitacao;
@@ -34,6 +36,9 @@ public class FreteService {
 	
 	@Autowired
 	private ProdutoService produtoService;
+
+    @Autowired
+	private ParametroService parametroService;
 	
     private static final String API_KEY = "AIzaSyAP1IE7RV5OqTAGPNnw2NbI8jNesEnXT1Y";
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/distancematrix/json";
@@ -43,7 +48,9 @@ public class FreteService {
     private static final String BASE_URL_HERE = "https://router.hereapi.com/v8/routes";
 	
     public double calcularValorPorPeso(Long produtoId, Long caixaId) {
-        final double custoPorPeso = 2.5;
+        Parametro parametro = parametroService.procurarPorNome("CUSTO_PESO").orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
+        double custoPorPeso = Double.parseDouble(parametro.getValor());
+        System.out.println("O valor do parametro de custo por peso é: " + custoPorPeso);
         
         Produto produto = produtoService.procurarPorId(produtoId)
                 .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
@@ -189,7 +196,11 @@ public class FreteService {
     }
 
     public Double calcularCustoPorDistancia(double distancia) {
-        final double custoPorDistancia = 3;
+        Parametro parametro = parametroService.procurarPorNome("CUSTO_KM").orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
+        double custoPorDistancia = Double.parseDouble(parametro.getValor());
+
+        System.out.println("O valor do parametro de custo por km é: " + custoPorDistancia);
+
         return distancia * custoPorDistancia;
     }
 	

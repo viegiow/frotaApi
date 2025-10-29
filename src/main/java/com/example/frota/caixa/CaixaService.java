@@ -7,25 +7,33 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.frota.parametros.Parametro;
+import com.example.frota.parametros.ParametroService;
+
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class CaixaService {
 	@Autowired
 	private CaixaRepository caixaRepository;
+
+	@Autowired
+	private ParametroService parametroService;
 	
 	@Autowired CaixaMapper caixaMapper;
 	
 	public Caixa salvarOuAtualizar(AtualizacaoCaixa dto) {
+		Parametro parametro = parametroService.procurarPorNome("FATOR_CUBAGEM").orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
+        double fatorCubagem = Double.parseDouble(parametro.getValor());
         if (dto.id() != null) {
             Caixa existente = caixaRepository.findById(dto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dto.id()));
             caixaMapper.updateEntityFromDto(dto, existente);
-            existente.setPesoCubado(null);
+            existente.calcularPesoCubadoComFator(fatorCubagem);
             return caixaRepository.save(existente);
         } else {
             Caixa novaCaixa = caixaMapper.toEntityFromAtualizacao(dto);
-            novaCaixa.setPesoCubado(null);
+            novaCaixa.calcularPesoCubadoComFator(fatorCubagem);
             return caixaRepository.save(novaCaixa);
         }
     }

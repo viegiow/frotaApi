@@ -70,12 +70,15 @@ public class ParametroController {
     public String salvar(@ModelAttribute("parametro") @Valid AtualizacaoParametro dto,
                         BindingResult result,
                         RedirectAttributes redirectAttributes,
-                        Model model) {
+                        Model model) throws Exception {
 		if (result.hasErrors()) {
 	        // Recarrega dados necessários para mostrar erros
 	        return "parametro/formulario";
 	    }
 	    try {
+			if(dto.id()==null) {
+				throw new Exception("Cadastro de novo parâmetro bloqueado no momento. Contate a equipe de TI.");
+			}
 	        Parametro parametroSalvo = parametroService.salvarOuAtualizar(dto);
 	        String mensagem = dto.id() != null 
 	            ? "Parametro atualizado com sucesso!"
@@ -88,16 +91,6 @@ public class ParametroController {
 	    }
 	}
 	
-	@GetMapping("/delete/{id}")
-	@Transactional
-	public String deleteTutorial(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
-		try {
-			parametroService.apagarPorId(id);
-			redirectAttributes.addFlashAttribute("message", "O parametro foi apagado!");
-		} catch (Exception e) {
-			redirectAttributes.addFlashAttribute("message", e.getMessage());
-		}
-		return "redirect:/parametro";
-	}
+	
 
 }
