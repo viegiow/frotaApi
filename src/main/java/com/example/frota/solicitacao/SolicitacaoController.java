@@ -75,9 +75,12 @@ public class SolicitacaoController {
 				Solicitacao solicitacao = solicitacaoService.procurarPorId(id)
 						.orElseThrow(() -> new EntityNotFoundException("Solicitação não encontrada"));
 				model.addAttribute("produtos", produtoService.procurarTodas());
-		        model.addAttribute("caixas", caixaService.procurarTodas());
 				dto = solicitacaoMapper.toAtualizacaoDto(solicitacao);
 				model.addAttribute("solicitacao", dto);
+				Produto produto = produtoService.procurarPorId(dto.produtoId())
+						.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+				List<Caixa> caixas = caixaService.procurarCompativeis(produto.getComprimento(), produto.getAltura(), produto.getLargura(), produto.getPesoProduto());
+				model.addAttribute("caixas", caixas);
 			}
 			return "solicitacao/formulario";
 		} catch (EntityNotFoundException e) {
@@ -128,35 +131,6 @@ public class SolicitacaoController {
 	        return "redirect:/solicitacao/formulario" + (dto.id() != null ? "?id=" + dto.id() : "");
 	    }
 	}
-	
-//	@PostMapping("/calcularFrete")
-//	public <Optional> String calcularFrete(@ModelAttribute("solicitacao") @Valid AtualizacaoSolicitacao dto,
-//            BindingResult result,
-//            RedirectAttributes redirectAttributes,
-//            Model model) {
-//		if (result.hasErrors()) {
-//	        // Recarrega dados necessários para mostrar erros
-//			System.out.println(result);
-//			model.addAttribute("solicitacao", dto);
-//			model.addAttribute("produtos", produtoService.procurarTodas());
-//	        model.addAttribute("caixas", caixaService.procurarTodas());
-//	        return "solicitacao/formulario";
-//	    }
-//	    try {
-//	        model.addAttribute("produtos", produtoService.procurarTodas());
-//	        model.addAttribute("caixas", caixaService.procurarTodas());
-//	        model.addAttribute("message", "Frete calculado com sucesso!");
-//	    	model.addAttribute("solicitacao", dto);
-//	        String mensagem = dto.id() != null 
-//	            ? "Frete atualizado com sucesso!"
-//	            : "Frete calculado com sucesso!";
-//	        redirectAttributes.addFlashAttribute("message", mensagem);
-//	        return "solicitacao/formulario";
-//	    } catch (EntityNotFoundException e) {
-//	        redirectAttributes.addFlashAttribute("error", e.getMessage());
-//	        return "redirect:/solicitacao/formulario" + (dto.id() != null ? "?id=" + dto.id() : "");
-//	    }
-//	}
 	
 	@GetMapping("/delete/{id}")
 	@Transactional
