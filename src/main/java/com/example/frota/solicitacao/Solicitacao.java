@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -29,7 +30,7 @@ public class Solicitacao {
 	@OneToOne
 	@JoinColumn(name="produto_id")
 	private Produto produto;
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name="caixa_id")
 	private Caixa caixa;
 	private Double frete;
