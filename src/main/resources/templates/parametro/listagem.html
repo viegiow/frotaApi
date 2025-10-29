@@ -16,7 +16,7 @@
 				<span aria-hidden="true">&times;</span>
 			</button>
 		</div>
-    <a href="/parametro/formulario">Novo</a>
+    
     <div th:if="${listaParametros.size() > 0}">
 	    <table class="table table-hover table-responsive-xl">
 	        <thead class="thead-light">
@@ -34,11 +34,8 @@
 	               
 					<td><a th:href="@{'/parametro/formulario/' + ${parametro.id}}"
 							title="Editar o parametro"
-							class="fa-regular fa-pen-to-square icon-dark"></a> &nbsp; <a
-							th:href="@{'/parametro/delete/' + ${parametro.id}}"
-							th:caixaTitle="${parametro.nome}" id="btnDelete"
-							title="Apague este parametro"
-							class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+							class="fa-regular fa-pen-to-square icon-dark"></a> &nbsp; 
+							
 					</td>
 	            </tr>
 	        </tbody>
