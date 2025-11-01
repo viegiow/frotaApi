@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -127,20 +128,25 @@ public class FreteService {
 
             JsonNode tolls = root.path("routes").get(0).path("sections").get(0).path("tolls");
             
-            double totalTolls = 0.0;
-            if (tolls.isArray()) {
-                for (JsonNode toll : tolls) {
-                    JsonNode fares = toll.path("fares");
-                    if (fares.isArray()) {
-                        for (JsonNode fare : fares) {
-                            double valor = fare.path("price").path("value").asDouble(0.0);
-                            totalTolls += valor;
+            if (tolls.isMissingNode()) {
+            	return 0.0;
+            }
+            else {
+            	double totalTolls = 0.0;
+                if (tolls.isArray()) {
+                    for (JsonNode toll : tolls) {
+                        JsonNode fares = toll.path("fares");
+                        if (fares.isArray()) {
+                            for (JsonNode fare : fares) {
+                                double valor = fare.path("price").path("value").asDouble(0.0);
+                                totalTolls += valor;
+                            }
                         }
                     }
                 }
+                return totalTolls;
             }
-            System.out.println(totalTolls);
-            return totalTolls;
+            
             
     	} catch (Exception e) {
             e.printStackTrace();
@@ -203,5 +209,13 @@ public class FreteService {
 
         return distancia * custoPorDistancia;
     }
-	
+    
+    public Double obterTotalFrete(String origem, String destino, Long produtoId, Long caixaId) {
+        Double distancia = calcularDistancia(origem, destino);
+        Double totalPeso = calcularValorPorPeso(produtoId, caixaId);
+        Double custoDistancia =  calcularCustoPorDistancia(distancia);
+        Double pedagio = calcularPedagios(origem, destino);
+        Double total = (double) Math.round((totalPeso + custoDistancia + pedagio)*100)/100;
+        return total;
+    }
 }

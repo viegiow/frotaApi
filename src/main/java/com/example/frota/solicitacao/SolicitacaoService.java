@@ -39,13 +39,7 @@ public class SolicitacaoService {
 		Caixa caixa = caixaService.procurarPorId(dto.caixaId())
 				.orElseThrow(() -> new EntityNotFoundException("Caixa não encontrada com ID: " + dto.caixaId()));
 		
-        Double distancia = freteService.calcularDistancia(dto.enderecoPartida(), dto.enderecoDestino());
-        Double totalPeso = freteService.calcularValorPorPeso(dto.produtoId(), dto.caixaId());
-        Double custoDistancia =  freteService.calcularCustoPorDistancia(distancia);
-        Double pedagio = freteService.calcularPedagios(dto.enderecoPartida(), dto.enderecoDestino());
-        
-        Double custoFrete = totalPeso + custoDistancia + pedagio;
-        System.out.println("pedágio: " + pedagio + "totalPeso: " + totalPeso + "custoDistancia: " + custoDistancia + "custoFrete: " + custoFrete);
+		Double custoFrete = freteService.obterTotalFrete(dto.enderecoPartida(), dto.enderecoDestino(), dto.produtoId(), dto.caixaId());
 		
 		if (dto.id() != null) {
 			// atualizando Busca existente e atualiza
@@ -58,9 +52,8 @@ public class SolicitacaoService {
 			
 			return solicitacaoRepository.save(existente);
 		} else {
-			// criando Novo caminhão
 			Solicitacao novaSolicitacao = solicitacaoMapper.toEntityFromAtualizacao(dto);
-			novaSolicitacao.setProduto(produto); // Define a marca completa
+			novaSolicitacao.setProduto(produto);
 			novaSolicitacao.setCaixa(caixa);
 			novaSolicitacao.setFrete(custoFrete);
 			
