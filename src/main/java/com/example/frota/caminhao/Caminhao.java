@@ -81,6 +81,7 @@ public class Caminhao {
 			this.largura = dados.largura();
 		if (dados.altura() != 0)
 			this.altura = dados.altura();
+		this.setMetragemCubica();
 	}
 	
 	public void setMetragemCubica() {

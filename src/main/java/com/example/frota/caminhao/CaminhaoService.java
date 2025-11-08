@@ -20,31 +20,14 @@ public class CaminhaoService {
 	@Autowired
 	private MarcaService marcaService;
 	
-	@Autowired
-	private CaminhaoMapper caminhaoMapper;
-	
-	public Caminhao salvarOuAtualizar(AtualizacaoCaminhao dto) {
-        // Valida se a marca existe
-        Marca marca = marcaService.procurarPorId(dto.marcaId())
-            .orElseThrow(() -> new EntityNotFoundException("Marca não encontrada com ID: " + dto.marcaId()));
-        if (dto.id() != null) {
-            // atualizando Busca existente e atualiza
-            Caminhao existente = caminhaoRepository.findById(dto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dto.id()));
-            caminhaoMapper.updateEntityFromDto(dto, existente);
-            existente.setMarca(marca); // Atualiza a marca
-            existente.setMetragemCubica();
-            return caminhaoRepository.save(existente);
-        } else {
-            // criando Novo caminhão
-            Caminhao novoCaminhao = caminhaoMapper.toEntityFromAtualizacao(dto);
-            novoCaminhao.setMarca(marca); // Define a marca completa
-            novoCaminhao.setMetragemCubica();
-            
-            return caminhaoRepository.save(novoCaminhao);
-        }
-    }
-	
+	public Caminhao salvar(CadastroCaminhao dados) {
+		Marca marca = marcaService.procurarPorId(dados.marcaId())
+	            .orElseThrow(() -> new EntityNotFoundException("Marca não encontrada com ID: " + dados.marcaId()));
+        
+		Caminhao novoCaminhao = new Caminhao(dados, marca);
+		novoCaminhao.setMetragemCubica();
+		return caminhaoRepository.save(novoCaminhao);
+	}
 	public List<Caminhao> procurarTodos(){
 		return caminhaoRepository.findAll(Sort.by("modelo").ascending());
 	}
@@ -54,5 +37,14 @@ public class CaminhaoService {
 	
 	public Optional<Caminhao> procurarPorId(Long id) {
 	    return caminhaoRepository.findById(id);
+	}
+
+	public void atualizar(AtualizacaoCaminhao dados) {
+		Marca marca = marcaService.procurarPorId(dados.marcaId())
+	            .orElseThrow(() -> new EntityNotFoundException("Marca não encontrada com ID: " + dados.marcaId()));
+		Caminhao atualizarCaminhao = caminhaoRepository.findById(dados.id())
+                .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dados.id()));
+		atualizarCaminhao.atualizarInformacoes(dados, marca);
+		caminhaoRepository.save(atualizarCaminhao);
 	}
 }
