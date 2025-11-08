@@ -18,22 +18,15 @@ public class MarcaService {
 	@Autowired
 	private MarcaRepository marcaRepository;
 	
-	@Autowired
-	private MarcaMapper marcaMapper;
-	
-	public Marca salvarOuAtualizar(DadosAtualizacaoMarca dto) {
-        if (dto.id() != null) {
-            // atualizando Busca existente e atualiza
-            Marca existente = marcaRepository.findById(dto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dto.id()));
-            marcaMapper.updateEntityFromDto(dto, existente);
-            return marcaRepository.save(existente);
-        } else {
-            // criando Novo caminhão
-            Marca novaMarca = marcaMapper.toEntityFromAtualizacao(dto);
-            return marcaRepository.save(novaMarca);
-        }
-    }
+	public void salvar(DadosCadastroMarca dados) {
+		Marca novaMarca = new Marca(dados);
+		marcaRepository.save(novaMarca);
+	}
+	public void atualizar(DadosAtualizacaoMarca dados) {
+		Marca atualizarMarca = marcaRepository.getReferenceById(dados.id());
+		atualizarMarca.atualizarInformacoes(dados);
+		marcaRepository.save(atualizarMarca);
+	}
 	public List<Marca> procurarTodos(){
 		return marcaRepository.findAll(Sort.by("nome").ascending());
 	}
