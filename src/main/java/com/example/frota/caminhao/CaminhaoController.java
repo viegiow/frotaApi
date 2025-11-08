@@ -1,124 +1,96 @@
 package com.example.frota.caminhao;
 
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.example.frota.marca.MarcaService;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 
-@Controller
+@RestController
 @RequestMapping("/caminhao")
+@CrossOrigin("*")
 public class CaminhaoController {
 	
+	private final Set<String> CHAVES_VALIDAS = Set.of(
+			"cco123",
+			"azul123"
+	);
 	@Autowired
 	private CaminhaoService caminhaoService;
 	
-	@Autowired
-    private CaminhaoMapper caminhaoMapper;
-	
-	@Autowired
-	private MarcaService marcaService;
-	
 	@GetMapping                 
-	public String carregaPaginaFormulario ( Model model){ 
-		model.addAttribute("listaVeiculos", caminhaoService.procurarTodos());
-	    return "caminhao/listagem";              
-	} 
-	////////////////////////
-	//Novo GetMapping com DTO e Mapper
-	@GetMapping("/formulario")
-    public String mostrarFormulario(@RequestParam(required = false) Long id, Model model) {
-		AtualizacaoCaminhao dto;
-        if (id != null) {
-            //edição: Carrega dados existentes
-            Caminhao caminhao = caminhaoService.procurarPorId(id)
-                .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado"));
-            dto = caminhaoMapper.toAtualizacaoDto(caminhao);
-        } else {
-            // criação: DTO vazio
-            dto = new AtualizacaoCaminhao(null, "", "", null, null, null, 0, 0, 0);
-        }
-        model.addAttribute("caminhao", dto);
-        model.addAttribute("marcas", marcaService.procurarTodos());
-        return "caminhao/formulario";
-    }
+	public List<Caminhao> ListaCaminhao (){
+	    return caminhaoService.procurarTodos();
+	}
 	
-//	// Para criação sem passar o ID
-//	@GetMapping("/formulario")
-//	public String novoCaminhao(Model model  ) {
-//		model.addAttribute("caminhao", new Caminhao());
-//		model.addAttribute("marcas", marcaService.procurarTodos());
-//		return "caminhao/formulario";
+	@GetMapping("/{id}")        
+	public Caminhao procurarCaminhao (@PathVariable("id") Long id){
+		Caminhao caminhao = caminhaoService.procurarPorId(id)
+				.orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado"));
+		return caminhao;
+	}
+	
+	@PostMapping
+	@Transactional
+	public void cadastrar(@RequestBody @Valid CadastroCaminhao dados) {
+		caminhaoService.salvar(dados);
+	}
+	
+//	//com segurança
+//	@PostMapping
+//	@Transactional
+//	public ResponseEntity<?> cadastrar(
+//		@RequestHeader("X-API-KEY") String apiKey,
+//		@RequestBody @Valid CadastroCaminhao dados) {
+//		//solução com alto acoplamento, pois o controller tem que saber muita coisa
+//		//viola 3 principios do SOLID SRP, DIP, OCP
+//		//ideal eh desmembrar o teste para outra classe
+//		
+//			//validar chave que veio do frontend
+//		if (!CHAVES_VALIDAS.contains(apiKey)) {
+//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//					.body("{\"erro\":\"Chave API inválida\"}");
+//		}
+//		Marca marca = marcaService.procurarPorId(dados.marcaId());
+//		Caminhao caminhao = new Caminhao(dados, marca);
+//		caminhaoService.salvar(caminhao);
+//		//controller sabe muito sobre validacao
+//		return ResponseEntity.status(HttpStatus.CREATED).body(dados);
 //	}
+		
+//		@PostMapping
+//	    @ApiKeyRequired(permissions = {"WRITE"}, description = "Criar aluno")
+//	    @RateLimit(value = 10, duration = 1, timeUnit = TimeUnit.MINUTES)
+//	    public void criarAluno(@RequestBody @Valid DadosCadastroAluno dados) {
+//			alunoService.salvar(dados);
+//	    }
+
+	@PutMapping
+	@Transactional
+	public void atualizar (@RequestBody  AtualizacaoCaminhao dados) {
+		caminhaoService.atualizar(dados);
+	}
 	
-	@GetMapping ("/formulario/{id}")    
-	public String carregaPaginaFormulario (@PathVariable("id") Long id, Model model,
-			RedirectAttributes redirectAttributes) {
-		AtualizacaoCaminhao dto;
-		try {
-			if(id != null) {
-				Caminhao caminhao = caminhaoService.procurarPorId(id)
-						.orElseThrow(() -> new EntityNotFoundException("Caminhao não encontrado"));
-				model.addAttribute("marcas", marcaService.procurarTodos());
-				//mapear caminhão para AtualizacaoCaminhao
-				dto = caminhaoMapper.toAtualizacaoDto(caminhao);
-				model.addAttribute("caminhao", dto);
-			}
-			return "caminhao/formulario";
-		} catch (EntityNotFoundException e) {
-			//resolver erros
-			redirectAttributes.addFlashAttribute("error", e.getMessage());
-			return "redirect:/caminhao";
-		}
+	@DeleteMapping ("/{id}")
+	@Transactional
+	public void excluir(@PathVariable Long id) {
+		caminhaoService.apagarPorId(id);
+		
 	}
 	
 
-	@PostMapping("/salvar")
-    public String salvar(@ModelAttribute("caminhao") @Valid AtualizacaoCaminhao dto,
-                        BindingResult result,
-                        RedirectAttributes redirectAttributes,
-                        Model model) {
-		if (result.hasErrors()) {
-	        // Recarrega dados necessários para mostrar erros
-	        model.addAttribute("marcas", marcaService.procurarTodos());
-	        return "caminhao/formulario";
-	    }
-	    try {
-	        Caminhao caminhaoSalvo = caminhaoService.salvarOuAtualizar(dto);
-	        String mensagem = dto.id() != null 
-	            ? "Caminhão '" + caminhaoSalvo.getPlaca() + "' atualizado com sucesso!"
-	            : "Caminhão '" + caminhaoSalvo.getPlaca() + "' criado com sucesso!";
-	        redirectAttributes.addFlashAttribute("message", mensagem);
-	        return "redirect:/caminhao";
-	    } catch (EntityNotFoundException e) {
-	        redirectAttributes.addFlashAttribute("error", e.getMessage());
-	        return "redirect:/caminhao/formulario" + (dto.id() != null ? "?id=" + dto.id() : "");
-	    }
-	}
-	
-	@GetMapping("/delete/{id}")
-	@Transactional
-	public String deleteTutorial(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
-		try {
-			caminhaoService.apagarPorId(id);
-			redirectAttributes.addFlashAttribute("message", "O caminhao foi apagado!");
-		} catch (Exception e) {
-			redirectAttributes.addFlashAttribute("message", e.getMessage());
-		}
-		return "redirect:/caminhao";
-	}
-	
-	
 }
