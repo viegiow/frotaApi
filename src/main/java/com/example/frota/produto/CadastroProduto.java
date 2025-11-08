@@ -1,15 +1,15 @@
-package com.example.frota.caixa;
+package com.example.frota.produto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record CadastroCaixa(
-		@NotBlank
-		String material,
+public record CadastroProduto(
 		@NotNull
 		int comprimento,
-		int largura,
 		int altura,
-		int limitePeso) {
+		int largura,
+		double pesoProduto,
+		@NotBlank
+		String nome) {
 
 }

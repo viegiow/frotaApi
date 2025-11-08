@@ -1,10 +1,9 @@
 package com.example.frota.marca;
 
-import jakarta.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotBlank;
 public record DadosAtualizacaoMarca(
-		@NotNull
 		Long id,
+		@NotBlank
 		String nome,
 		String pais) {
 }

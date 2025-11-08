@@ -33,11 +33,13 @@ public class CaminhaoService {
                 .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dto.id()));
             caminhaoMapper.updateEntityFromDto(dto, existente);
             existente.setMarca(marca); // Atualiza a marca
+            existente.setMetragemCubica();
             return caminhaoRepository.save(existente);
         } else {
             // criando Novo caminhão
             Caminhao novoCaminhao = caminhaoMapper.toEntityFromAtualizacao(dto);
             novoCaminhao.setMarca(marca); // Define a marca completa
+            novoCaminhao.setMetragemCubica();
             
             return caminhaoRepository.save(novoCaminhao);
         }

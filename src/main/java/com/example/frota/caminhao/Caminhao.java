@@ -39,7 +39,7 @@ public class Caminhao {
 	private int largura; // cm
 	private int altura; // cm
 	private int fatorCubagem = 300;
-	private int metragemCubica;
+	private double metragemCubica;
 	private double cargaMaxima;
 	private int ano;
 
@@ -52,7 +52,6 @@ public class Caminhao {
 		this.comprimento = dados.comprimento();
 		this.largura = dados.largura();
 		this.altura = dados.altura();
-		this.metragemCubica = this.setMetragemCubica();
 	}
 	public Caminhao(AtualizacaoCaminhao dados, Marca marca) {
 		this.modelo = dados.modelo();
@@ -63,7 +62,6 @@ public class Caminhao {
 		this.comprimento = dados.comprimento();
 		this.largura = dados.largura();
 		this.altura = dados.altura();
-		this.metragemCubica = this.setMetragemCubica();
 	}
 	
 	public void atualizarInformacoes(AtualizacaoCaminhao dados, Marca marca) {
@@ -83,12 +81,11 @@ public class Caminhao {
 			this.largura = dados.largura();
 		if (dados.altura() != 0)
 			this.altura = dados.altura();
-		this.metragemCubica = this.setMetragemCubica();
 	}
 	
-	public int setMetragemCubica() {
-		if (this.comprimento == 0 || this.largura == 0 || this.altura == 0) {return 0;}
-		return ((this.comprimento/100) * (this.largura/100) * (this.altura/100));
+	public void setMetragemCubica() {
+		if (this.comprimento == 0 || this.largura == 0 || this.altura == 0) {this.metragemCubica = 0.0;}
+		this.metragemCubica = ((this.comprimento/100) * (this.largura/100) * (this.altura/100));
 	}
 	
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,11 +26,17 @@ public class Caixa {
 	private int altura;
 	private String material;
 	private int limitePeso;
-	private double pesoCubado;
-	private int fatorCubagem = 300;
+	@Setter(AccessLevel.NONE) 
+	private Double pesoCubado;
 	
-	public double getPesoCubado() {
-		if (this.comprimento == 0 || this.largura == 0 || this.altura == 0) {return 0.0;}
-		return ((this.comprimento/100.0) * (this.largura/100.0) * (this.altura/100.0)) * this.fatorCubagem;
-	}
+	 public void calcularPesoCubadoComFator(Double fatorCubagem) {
+        if (fatorCubagem == null || comprimento == 0 || largura == 0 || altura == 0) {
+            this.pesoCubado = null;
+        } else {
+            double total = ((comprimento/100.0) * (largura/100.0) * (altura/100.0)) * fatorCubagem;
+            this.pesoCubado = (double) Math.round(total*100)/100;
+        }
+    }
+
+
 }

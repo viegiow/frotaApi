@@ -113,7 +113,7 @@ public class CaminhaoController {
 	public String deleteTutorial(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
 		try {
 			caminhaoService.apagarPorId(id);
-			redirectAttributes.addFlashAttribute("message", "O caminhao " + id + " foi apagado!");
+			redirectAttributes.addFlashAttribute("message", "O caminhao foi apagado!");
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}
