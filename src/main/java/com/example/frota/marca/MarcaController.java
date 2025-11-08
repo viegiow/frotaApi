@@ -3,6 +3,7 @@ package com.example.frota.marca;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,20 +39,23 @@ public class MarcaController {
 	
 	@PostMapping
 	@Transactional
-	public void cadastrar(@RequestBody @Valid DadosCadastroMarca dados) {
+	public ResponseEntity<?> cadastrar(@RequestBody @Valid DadosCadastroMarca dados) {
 		marcaService.salvar(dados);
+		return ResponseEntity.ok("Marca criada com sucesso!");
 	}
 
 	@PutMapping
 	@Transactional
-	public void atualizar (@RequestBody DadosAtualizacaoMarca dados) {
+	public ResponseEntity<?> atualizar (@RequestBody @Valid DadosAtualizacaoMarca dados) {
 		marcaService.atualizar(dados);
+		return ResponseEntity.ok("Marca atualizada com sucesso!");
 	}
 	
 	@DeleteMapping ("/{id}")
 	@Transactional
-	public void excluir(@PathVariable Long id) {
+	public ResponseEntity<?> excluir(@PathVariable Long id) {
 		marcaService.apagarPorId(id);
+		return ResponseEntity.ok("Marca deletada com sucesso!");
 	}
 
 }
