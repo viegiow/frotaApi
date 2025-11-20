@@ -13,22 +13,6 @@ public class ParametroService {
 	@Autowired
 	private ParametroRepository parametroRepository;
 	
-	@Autowired
-	private ParametroMapper parametroMapper;
-	
-	public Parametro salvarOuAtualizar(AtualizacaoParametro dto) {
-        if (dto.id() != null) {
-            Parametro existente = parametroRepository.findById(dto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Parâmetro não encontrado com ID: " + dto.id()));
-            parametroMapper.updateEntityFromDto(dto, existente);
-            return parametroRepository.save(existente);
-        } else {
-            Parametro novoParametro = parametroMapper.toEntityFromAtualizacao(dto);
-            
-            return parametroRepository.save(novoParametro);
-        }
-    }
-	
 	public List<Parametro> procurarTodas() {
 		return parametroRepository.findAll();
 	}
@@ -43,5 +27,12 @@ public class ParametroService {
 	
 	public void apagarPorId (Long id) {
 		parametroRepository.deleteById(id);
+	}
+
+	public void atualizar(AtualizacaoParametro dados) {
+		Parametro parametro = parametroRepository.findById(dados.id())
+				.orElseThrow(() -> new EntityNotFoundException("Parâmetro não encontrado"));
+		parametro.atualizar(dados);
+		parametroRepository.save(parametro);
 	}
 }

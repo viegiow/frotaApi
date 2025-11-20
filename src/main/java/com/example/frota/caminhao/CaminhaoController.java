@@ -1,6 +1,5 @@
 package com.example.frota.caminhao;
 
-
 import java.util.List;
 import java.util.Set;
 

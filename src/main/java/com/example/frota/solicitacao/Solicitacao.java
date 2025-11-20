@@ -3,7 +3,6 @@ package com.example.frota.solicitacao;
 import com.example.frota.caixa.Caixa;
 import com.example.frota.produto.Produto;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,8 +34,24 @@ public class Solicitacao {
 	private Caixa caixa;
 	private Double frete;
 	private Double pedagio;
-	private Double custoKm;
 	private String enderecoPartida;
 	private String enderecoDestino;
+	
+	public Solicitacao(CadastroSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
+		this.caixa = caixa;
+		this.produto = produto;
+		this.frete = frete;
+		this.pedagio = pedagio;
+		this.enderecoPartida = dados.enderecoPartida();
+		this.enderecoDestino = dados.enderecoDestino();
+	}
+	public void atualizarSolicitacao(AtualizacaoSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
+		this.caixa = caixa;
+		this.produto = produto;
+		this.frete = frete;
+		this.pedagio = pedagio;
+		this.enderecoPartida = dados.enderecoPartida();
+		this.enderecoDestino = dados.enderecoDestino();
+	}
 }
 

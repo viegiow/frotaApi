@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String parametro = ex.getName();
-        String tipoEsperado = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "desconhecido";
+//        String tipoEsperado = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "desconhecido";
 
         ErrorResponse erro = new ErrorResponse(
             400,
@@ -47,16 +47,16 @@ public class GlobalExceptionHandler {
 
         if (ex.getMostSpecificCause() != null) {
             String detalhe = ex.getMostSpecificCause().getMessage();
-            if (detalhe != null && detalhe.toLowerCase().contains("unique")) {
-                mensagem = "Já existe um registro com esse valor. Verifique campos únicos (ex: e-mail, CPF, etc.).";
+            if (detalhe != null) {
+            	if (detalhe.toLowerCase().contains("unique")) 
+            		{ mensagem = "Já existe um registro com esse valor. Verifique campos únicos (ex: e-mail, CPF, etc.)."; }
+            	if (detalhe.toLowerCase().contains("foreign key")) 
+                    { mensagem = "Não é possível excluir este registro, pois ele está vinculado a outros dados."; }
+            	if (detalhe.toLowerCase().contains("duplicate entry")) 
+                { mensagem = "Não é possível cadastrar a solicitação, pois já existe uma solicitação para esse produto"; }
             }
         }
         
-        String detalhe = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : "";
-        if (detalhe.toLowerCase().contains("foreign key")) {
-            mensagem = "Não é possível excluir este registro, pois ele está vinculado a outros dados.";
-        }
-
         ErrorResponse erro = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             "Violação de integridade de dados",
@@ -65,5 +65,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
+    @ExceptionHandler(ProdutoIncompativelCaixa.class)
+    public ResponseEntity<String> handleRegra(ProdutoIncompativelCaixa e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }
 

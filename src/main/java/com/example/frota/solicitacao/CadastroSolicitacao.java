@@ -1,19 +1,16 @@
 package com.example.frota.solicitacao;
 
-import com.example.frota.caixa.Caixa;
-import com.example.frota.produto.Produto;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CadastroSolicitacao(
-		Double pedagio,
-		Double custoKm,
-		Double frete,
-		@NotBlank
+		@NotBlank(message="o endereço de origem não pode ser nulo")
 		String enderecoPartida,
+		@NotBlank(message="o endereço de destino não pode ser nulo")
 		String enderecoDestino,
-		Produto produto,
-		Caixa caixa
+		@NotNull(message="o código do produto não pode ser nulo")
+		Long produtoId,
+		@NotNull(message="o código da caixa não pode ser nulo")
+		Long caixaId
 		) {
 }

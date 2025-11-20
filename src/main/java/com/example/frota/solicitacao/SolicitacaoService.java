@@ -9,19 +9,16 @@ import org.springframework.stereotype.Service;
 
 import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
+import com.example.frota.errors.ResourceNotFoundException;
+import com.example.frota.frete.FreteCustoDistancia;
 import com.example.frota.frete.FreteService;
 import com.example.frota.produto.Produto;
 import com.example.frota.produto.ProdutoService;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SolicitacaoService {
 	@Autowired
 	private SolicitacaoRepository solicitacaoRepository;
-
-	@Autowired
-	private SolicitacaoMapper solicitacaoMapper;
 
 	@Autowired
 	private ProdutoService produtoService;
@@ -32,34 +29,6 @@ public class SolicitacaoService {
 	@Autowired
 	private FreteService freteService;
 
-	public Solicitacao salvarOuAtualizar(AtualizacaoSolicitacao dto) {
-		// Valida se a marca existe
-		Produto produto = produtoService.procurarPorId(dto.produtoId())
-				.orElseThrow(() -> new EntityNotFoundException("Produto não encontrado com ID: " + dto.produtoId()));
-		Caixa caixa = caixaService.procurarPorId(dto.caixaId())
-				.orElseThrow(() -> new EntityNotFoundException("Caixa não encontrada com ID: " + dto.caixaId()));
-		
-		Double custoFrete = freteService.obterTotalFrete(dto.enderecoPartida(), dto.enderecoDestino(), dto.produtoId(), dto.caixaId());
-		
-		if (dto.id() != null) {
-			// atualizando Busca existente e atualiza
-			Solicitacao existente = solicitacaoRepository.findById(dto.id())
-					.orElseThrow(() -> new EntityNotFoundException("Solicitação não encontrada com ID: " + dto.id()));
-			solicitacaoMapper.updateEntityFromDto(dto, existente);
-			existente.setProduto(produto); // Atualiza a marca
-			existente.setCaixa(caixa);
-			existente.setFrete(custoFrete);
-			
-			return solicitacaoRepository.save(existente);
-		} else {
-			Solicitacao novaSolicitacao = solicitacaoMapper.toEntityFromAtualizacao(dto);
-			novaSolicitacao.setProduto(produto);
-			novaSolicitacao.setCaixa(caixa);
-			novaSolicitacao.setFrete(custoFrete);
-			
-			return solicitacaoRepository.save(novaSolicitacao);
-		}
-	}
 	
 	public List<Solicitacao> procurarTodos(){
 		return solicitacaoRepository.findAll(Sort.by("frete").ascending());
@@ -70,5 +39,29 @@ public class SolicitacaoService {
 
 	public Optional<Solicitacao> procurarPorId(Long id) {
 		return solicitacaoRepository.findById(id);
+	}
+
+	public void salvar(CadastroSolicitacao dados) {
+		Produto produto = produtoService.procurarPorId(dados.produtoId())
+				.orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+		Caixa caixa = caixaService.procurarPorId(dados.caixaId())
+				.orElseThrow(() -> new ResourceNotFoundException("Caixa não encontrada"));
+		FreteCustoDistancia dadosFrete = new FreteCustoDistancia(dados.enderecoPartida(), dados.enderecoDestino(),dados.produtoId(), dados.caixaId());
+		Double custoFrete = freteService.obterTotalFrete(dadosFrete);
+		Solicitacao novaSolicitacao = new Solicitacao(dados, produto, caixa, custoFrete, 0.0);
+		solicitacaoRepository.save(novaSolicitacao);
+		
+	}
+	public void atualizar(AtualizacaoSolicitacao dados) {
+		Produto produto = produtoService.procurarPorId(dados.produtoId())
+				.orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+		Caixa caixa = caixaService.procurarPorId(dados.caixaId())
+				.orElseThrow(() -> new ResourceNotFoundException("Caixa não encontrada"));
+		FreteCustoDistancia dadosFrete = new FreteCustoDistancia(dados.enderecoPartida(), dados.enderecoDestino(),dados.produtoId(), dados.caixaId());
+		Double custoFrete = freteService.obterTotalFrete(dadosFrete);
+		Solicitacao solicitacaoExistente = solicitacaoRepository.findById(dados.id())
+				.orElseThrow(() -> new ResourceNotFoundException("Solicitacao não encontrada"));
+		solicitacaoExistente.atualizarSolicitacao(dados, produto, caixa, custoFrete, custoFrete);
+		solicitacaoRepository.save(solicitacaoExistente);
 	}
 }

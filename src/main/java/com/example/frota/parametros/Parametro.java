@@ -35,4 +35,8 @@ public class Parametro {
     private void toUpperCaseFields() {
         if (nome != null) nome = nome.toUpperCase();
     }
+    
+    public void atualizar(AtualizacaoParametro dados) {
+		this.valor = dados.valor();
+	}
 }
