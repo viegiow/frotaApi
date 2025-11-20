@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record AtualizacaoCaminhao(
-	    Long id,
+		@NotNull(message = "Id é obrigatório")
+		Long id,
 	    @NotBlank(message = "Modelo é obrigatório") 
 	    String modelo,
 	    

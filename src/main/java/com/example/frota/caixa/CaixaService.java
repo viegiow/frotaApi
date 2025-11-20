@@ -2,11 +2,11 @@ package com.example.frota.caixa;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.frota.errors.ResourceNotFoundException;
 import com.example.frota.parametros.Parametro;
 import com.example.frota.parametros.ParametroService;
 
@@ -17,32 +17,15 @@ public class CaixaService {
 	@Autowired
 	private CaixaRepository caixaRepository;
 
-	@Autowired
-	private ParametroService parametroService;
-	
 	@Autowired CaixaMapper caixaMapper;
 	
-	public Caixa salvarOuAtualizar(AtualizacaoCaixa dto) {
-		Parametro parametro = parametroService.procurarPorNome("FATOR_CUBAGEM").orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
-        double fatorCubagem = Double.parseDouble(parametro.getValor());
-        if (dto.id() != null) {
-            Caixa existente = caixaRepository.findById(dto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dto.id()));
-            caixaMapper.updateEntityFromDto(dto, existente);
-            existente.calcularPesoCubadoComFator(fatorCubagem);
-            return caixaRepository.save(existente);
-        } else {
-            Caixa novaCaixa = caixaMapper.toEntityFromAtualizacao(dto);
-            novaCaixa.calcularPesoCubadoComFator(fatorCubagem);
-            return caixaRepository.save(novaCaixa);
-        }
-    }
+	@Autowired
+	private ParametroService parametroService;
 	
 	public List<Caixa> procurarCompativeis(int comprimento, int altura, int largura, Double pesoMax) {
 	    return caixaRepository.findCompativeis(comprimento, altura, largura, pesoMax);
 	}
 
-	
 	public List<Caixa> procurarTodas() {
 		return caixaRepository.findAll();
 	}
@@ -53,6 +36,25 @@ public class CaixaService {
 	
 	public void apagarPorId (Long id) {
 		caixaRepository.deleteById(id);
+	}
+
+	public void salvar(CadastroCaixa dados) {
+		Parametro parametro = parametroService.procurarPorNome("FATOR_CUBAGEM")
+				.orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
+        Double fatorCubagem = Double.parseDouble(parametro.getValor());
+        System.out.println("cubagem "+ fatorCubagem);
+		Caixa novaCaixa = new Caixa(dados, fatorCubagem);
+		caixaRepository.save(novaCaixa);
+	}
+
+	public void atualizar(AtualizacaoCaixa dados) {
+		Parametro parametro = parametroService.procurarPorNome("FATOR_CUBAGEM")
+				.orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
+        Double fatorCubagem = Double.parseDouble(parametro.getValor());
+		Caixa caixaExistente = caixaRepository.findById(dados.id())
+				.orElseThrow(() -> new ResourceNotFoundException("Caixa não encontrada"));
+		caixaExistente.CaixaAtualizar(dados, fatorCubagem);
+		caixaRepository.save(caixaExistente);
 	}
 
 }
