@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.frota.errors.ResourceNotFoundException;
 import com.example.frota.parametros.Parametro;
 import com.example.frota.parametros.ParametroService;
+import com.example.frota.produto.Produto;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -17,13 +18,11 @@ public class CaixaService {
 	@Autowired
 	private CaixaRepository caixaRepository;
 
-	@Autowired CaixaMapper caixaMapper;
-	
 	@Autowired
 	private ParametroService parametroService;
 	
-	public List<Caixa> procurarCompativeis(int comprimento, int altura, int largura, Double pesoMax) {
-	    return caixaRepository.findCompativeis(comprimento, altura, largura, pesoMax);
+	public List<Caixa> procurarCompativeis(Produto produto) {
+	    return caixaRepository.findCompativeis(produto.getComprimento(), produto.getAltura(), produto.getLargura(), produto.getPesoProduto());
 	}
 
 	public List<Caixa> procurarTodas() {
@@ -42,14 +41,13 @@ public class CaixaService {
 		Parametro parametro = parametroService.procurarPorNome("FATOR_CUBAGEM")
 				.orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
         Double fatorCubagem = Double.parseDouble(parametro.getValor());
-        System.out.println("cubagem "+ fatorCubagem);
 		Caixa novaCaixa = new Caixa(dados, fatorCubagem);
 		caixaRepository.save(novaCaixa);
 	}
 
 	public void atualizar(AtualizacaoCaixa dados) {
 		Parametro parametro = parametroService.procurarPorNome("FATOR_CUBAGEM")
-				.orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
+				.orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));
         Double fatorCubagem = Double.parseDouble(parametro.getValor());
 		Caixa caixaExistente = caixaRepository.findById(dados.id())
 				.orElseThrow(() -> new ResourceNotFoundException("Caixa não encontrada"));

@@ -1,34 +1,24 @@
 package com.example.frota.frete;
 
 import java.net.URI;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
-import com.example.frota.caminhao.AtualizacaoCaminhao;
-import com.example.frota.caminhao.Caminhao;
 import com.example.frota.parametros.Parametro;
 import com.example.frota.parametros.ParametroService;
 import com.example.frota.produto.Produto;
 import com.example.frota.produto.ProdutoService;
-import com.example.frota.solicitacao.Solicitacao;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.NotNull;
 
 @Service
 public class FreteService {
@@ -51,8 +41,6 @@ public class FreteService {
     public double calcularValorPorPeso(Long produtoId, Long caixaId) {
         Parametro parametro = parametroService.procurarPorNome("CUSTO_PESO").orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
         double custoPorPeso = Double.parseDouble(parametro.getValor());
-        System.out.println("O valor do parametro de custo por peso é: " + custoPorPeso);
-        
         Produto produto = produtoService.procurarPorId(produtoId)
                 .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
         Caixa caixa = caixaService.procurarPorId(caixaId)
@@ -65,9 +53,7 @@ public class FreteService {
     
     public static String removerAcentos(String str) {
         if (str == null) return null;
-
         String normalizado = Normalizer.normalize(str, Normalizer.Form.NFD);
-
         String semAcentos = normalizado.replaceAll("\\p{M}", "");
 
         return semAcentos;
@@ -122,7 +108,6 @@ public class FreteService {
                     .toUri();
     		
     		String response = restTemplate.getForObject(uri, String.class);
-    		System.out.println(response);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response);
 
@@ -204,17 +189,15 @@ public class FreteService {
     public Double calcularCustoPorDistancia(double distancia) {
         Parametro parametro = parametroService.procurarPorNome("CUSTO_KM").orElseThrow(() -> new EntityNotFoundException("Parâmetro de custo por peso não encontrado"));;
         double custoPorDistancia = Double.parseDouble(parametro.getValor());
-
-        System.out.println("O valor do parametro de custo por km é: " + custoPorDistancia);
-
         return distancia * custoPorDistancia;
     }
     
-    public Double obterTotalFrete(String origem, String destino, Long produtoId, Long caixaId) {
-        Double distancia = calcularDistancia(origem, destino);
-        Double totalPeso = calcularValorPorPeso(produtoId, caixaId);
+    public Double obterTotalFrete(FreteCustoDistancia dados) {
+        Double distancia = calcularDistancia(dados.origem(), dados.destino());
+        // validar se produto cabe na caixa
+        Double totalPeso = calcularValorPorPeso(dados.produtoId(), dados.caixaId());
         Double custoDistancia =  calcularCustoPorDistancia(distancia);
-        Double pedagio = calcularPedagios(origem, destino);
+        Double pedagio = calcularPedagios(dados.origem(), dados.destino());
         Double total = (double) Math.round((totalPeso + custoDistancia + pedagio)*100)/100;
         return total;
     }
