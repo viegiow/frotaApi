@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.example.frota.errors.ResourceNotFoundException;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
 @RestController
 @RequestMapping("/marca")
@@ -31,9 +33,9 @@ public class MarcaController {
 	}
 	
 	@GetMapping("/{id}")        
-	public Marca procurarMarca (@PathVariable("id") Long id){
+	public Marca procurarMarca (@PathVariable ("id") @Min(1) Long id){
 		Marca marca = marcaService.procurarPorId(id)
-				.orElseThrow(() -> new EntityNotFoundException("Marca não encontrado"));
+				.orElseThrow(() -> new ResourceNotFoundException("Marca não encontrada."));
 		return marca;
 	}
 	
@@ -47,6 +49,8 @@ public class MarcaController {
 	@PutMapping
 	@Transactional
 	public ResponseEntity<?> atualizar (@RequestBody @Valid DadosAtualizacaoMarca dados) {
+		marcaService.procurarPorId(dados.id())
+			.orElseThrow(() -> new ResourceNotFoundException("Marca não encontrada."));
 		marcaService.atualizar(dados);
 		return ResponseEntity.ok("Marca atualizada com sucesso!");
 	}
@@ -54,6 +58,8 @@ public class MarcaController {
 	@DeleteMapping ("/{id}")
 	@Transactional
 	public ResponseEntity<?> excluir(@PathVariable Long id) {
+		marcaService.procurarPorId(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Marca não encontrada."));
 		marcaService.apagarPorId(id);
 		return ResponseEntity.ok("Marca deletada com sucesso!");
 	}

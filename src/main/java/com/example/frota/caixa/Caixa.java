@@ -29,6 +29,26 @@ public class Caixa {
 	@Setter(AccessLevel.NONE) 
 	private Double pesoCubado;
 	
+	public Caixa (CadastroCaixa dados, Double fatorCubagem) {
+		this.comprimento = dados.comprimento();
+		this.largura = dados.largura();
+		this.altura = dados.altura();
+		this.material = dados.material();
+		this.limitePeso = dados.limitePeso();
+		this.calcularPesoCubadoComFator(fatorCubagem);
+	}
+	
+	public void CaixaAtualizar(AtualizacaoCaixa dados, Double fatorCubagem) {
+		if (dados.id() != null) {
+			this.comprimento = dados.comprimento();
+			this.largura = dados.largura();
+			this.altura = dados.altura();
+			this.material = dados.material();
+			this.limitePeso = dados.limitePeso();
+			this.calcularPesoCubadoComFator(fatorCubagem);
+		}
+	}
+	
 	 public void calcularPesoCubadoComFator(Double fatorCubagem) {
         if (fatorCubagem == null || comprimento == 0 || largura == 0 || altura == 0) {
             this.pesoCubado = null;

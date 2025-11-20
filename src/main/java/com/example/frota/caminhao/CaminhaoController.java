@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.example.frota.errors.ResourceNotFoundException;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -40,14 +42,15 @@ public class CaminhaoController {
 	@GetMapping("/{id}")        
 	public Caminhao procurarCaminhao (@PathVariable("id") Long id){
 		Caminhao caminhao = caminhaoService.procurarPorId(id)
-				.orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado"));
+				.orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
 		return caminhao;
 	}
 	
 	@PostMapping
 	@Transactional
-	public void cadastrar(@RequestBody @Valid CadastroCaminhao dados) {
+	public ResponseEntity<?> cadastrar(@RequestBody @Valid CadastroCaminhao dados) {
 		caminhaoService.salvar(dados);
+		return ResponseEntity.ok("Caminhão criado com sucesso");
 	}
 	
 //	//com segurança
@@ -81,15 +84,20 @@ public class CaminhaoController {
 
 	@PutMapping
 	@Transactional
-	public void atualizar (@RequestBody  AtualizacaoCaminhao dados) {
+	public ResponseEntity<?> atualizar (@RequestBody @Valid AtualizacaoCaminhao dados) {
+		caminhaoService.procurarPorId(dados.id())
+			.orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
 		caminhaoService.atualizar(dados);
+		return ResponseEntity.ok("Caminhão atualizado com sucesso");
 	}
 	
 	@DeleteMapping ("/{id}")
 	@Transactional
-	public void excluir(@PathVariable Long id) {
+	public ResponseEntity<?> excluir(@PathVariable Long id) {
+		caminhaoService.procurarPorId(id)
+			.orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
 		caminhaoService.apagarPorId(id);
-		
+		return ResponseEntity.ok("Caminhão deletado com sucesso");
 	}
 	
 
