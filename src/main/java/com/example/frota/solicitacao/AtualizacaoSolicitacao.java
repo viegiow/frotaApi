@@ -1,5 +1,7 @@
 package com.example.frota.solicitacao;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,6 +15,9 @@ public record AtualizacaoSolicitacao(
 		@NotNull(message="o código do produto não pode ser nulo")
 		Long produtoId,
 		@NotNull(message="o código da caixa não pode ser nulo")
-		Long caixaId) {
+		Long caixaId,
+		@NotNull(message="horário de coleta não pode ser nulo")
+		LocalDateTime horaColeta
+		) {
 
 }

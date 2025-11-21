@@ -3,6 +3,7 @@ package com.example.frota.frete;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
+import com.example.frota.errors.ProdutoIncompativelCaixa;
+import com.example.frota.errors.ResourceNotFoundException;
 import com.example.frota.parametros.Parametro;
 import com.example.frota.parametros.ParametroService;
 import com.example.frota.produto.Produto;
@@ -193,12 +196,22 @@ public class FreteService {
     }
     
     public Double obterTotalFrete(FreteCustoDistancia dados) {
-        Double distancia = calcularDistancia(dados.origem(), dados.destino());
-        // validar se produto cabe na caixa
-        Double totalPeso = calcularValorPorPeso(dados.produtoId(), dados.caixaId());
-        Double custoDistancia =  calcularCustoPorDistancia(distancia);
-        Double pedagio = calcularPedagios(dados.origem(), dados.destino());
-        Double total = (double) Math.round((totalPeso + custoDistancia + pedagio)*100)/100;
-        return total;
+        Produto produto = produtoService.procurarPorId(dados.produtoId())
+				.orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+		List<Caixa> caixas = caixaService.procurarCompativeis(produto);
+		boolean cabe = caixas.stream()
+                .anyMatch(caixa -> caixa.getId().equals(dados.caixaId()));
+		if (cabe) {
+			Double distancia = calcularDistancia(dados.origem(), dados.destino());
+			Double totalPeso = calcularValorPorPeso(dados.produtoId(), dados.caixaId());
+	        Double custoDistancia =  calcularCustoPorDistancia(distancia);
+	        Double pedagio = calcularPedagios(dados.origem(), dados.destino());
+	        Double total = (double) Math.round((totalPeso + custoDistancia + pedagio)*100)/100;
+	        return total;
+		}
+		else {
+			throw new ProdutoIncompativelCaixa("Produto não cabe na caixa");
+		}
+        
     }
 }
