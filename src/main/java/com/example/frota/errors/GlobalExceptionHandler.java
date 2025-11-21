@@ -69,6 +69,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleRegra(ProdutoIncompativelCaixa e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegal(IllegalArgumentException e){
+    	return ResponseEntity.badRequest().body(e.getMessage());
+    }
 
 }
 

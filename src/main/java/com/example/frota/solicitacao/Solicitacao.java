@@ -1,5 +1,8 @@
 package com.example.frota.solicitacao;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import com.example.frota.caixa.Caixa;
 import com.example.frota.produto.Produto;
 
@@ -36,14 +39,17 @@ public class Solicitacao {
 	private Double pedagio;
 	private String enderecoPartida;
 	private String enderecoDestino;
+	private LocalDateTime horaColeta;
 	
 	public Solicitacao(CadastroSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 		this.caixa = caixa;
 		this.produto = produto;
 		this.frete = frete;
 		this.pedagio = pedagio;
 		this.enderecoPartida = dados.enderecoPartida();
 		this.enderecoDestino = dados.enderecoDestino();
+		this.horaColeta = LocalDateTime.parse(dados.horaColeta(), formatter);
 	}
 	public void atualizarSolicitacao(AtualizacaoSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
 		this.caixa = caixa;
@@ -52,6 +58,7 @@ public class Solicitacao {
 		this.pedagio = pedagio;
 		this.enderecoPartida = dados.enderecoPartida();
 		this.enderecoDestino = dados.enderecoDestino();
+		this.horaColeta = dados.horaColeta();
 	}
 }
 
