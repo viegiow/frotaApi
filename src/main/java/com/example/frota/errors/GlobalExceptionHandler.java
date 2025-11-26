@@ -73,6 +73,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIllegal(IllegalArgumentException e){
     	return ResponseEntity.badRequest().body(e.getMessage());
     }
+    @ExceptionHandler(EntregaJaRealizada.class)
+    public ResponseEntity<String> handleIllegal(EntregaJaRealizada e){
+    	return ResponseEntity.badRequest().body(e.getMessage());
+    }
 
 }
 

@@ -1,4 +1,4 @@
-package com.example.frota.solicitacao;
+package com.example.frota.feedback;
 
 import java.util.List;
 
@@ -15,14 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.frota.errors.ResourceNotFoundException;
+import com.example.frota.solicitacao.AtualizacaoSolicitacao;
+import com.example.frota.solicitacao.CadastroSolicitacao;
+import com.example.frota.solicitacao.Solicitacao;
+import com.example.frota.solicitacao.SolicitacaoService;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/solicitacao")
+@RequestMapping("/feedback")
 @CrossOrigin("*")
-public class SolicitacaoController {
+public class FeedbackController {
 	@Autowired
 	private SolicitacaoService solicitacaoService;
 	
@@ -68,5 +72,4 @@ public class SolicitacaoController {
 		solicitacaoService.apagarPorId(id);
 		return ResponseEntity.ok("Solicitacao deletada com sucesso!");
 	}
-
 }

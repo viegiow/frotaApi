@@ -1,7 +1,5 @@
 package com.example.frota.solicitacao;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
+import com.example.frota.errors.EntregaJaRealizada;
 import com.example.frota.errors.ResourceNotFoundException;
 import com.example.frota.frete.FreteCustoDistancia;
 import com.example.frota.frete.FreteService;
@@ -65,5 +64,14 @@ public class SolicitacaoService {
 				.orElseThrow(() -> new ResourceNotFoundException("Solicitacao não encontrada"));
 		solicitacaoExistente.atualizarSolicitacao(dados, produto, caixa, custoFrete, custoFrete);
 		solicitacaoRepository.save(solicitacaoExistente);
+	}
+	public void entregar(Long id) {
+		Solicitacao solicitacao = solicitacaoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
+		if (solicitacao.getStatus().equals("Entregue")) { throw new EntregaJaRealizada("Solicitação já havia sido entregue"); }
+		else {
+			solicitacao.setStatus("Entregue");
+			solicitacaoRepository.save(solicitacao);
+		}
 	}
 }

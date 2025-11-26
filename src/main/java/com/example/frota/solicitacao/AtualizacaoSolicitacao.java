@@ -17,7 +17,8 @@ public record AtualizacaoSolicitacao(
 		@NotNull(message="o código da caixa não pode ser nulo")
 		Long caixaId,
 		@NotNull(message="horário de coleta não pode ser nulo")
-		LocalDateTime horaColeta
+		LocalDateTime horaColeta,
+		String status
 		) {
 
 }
