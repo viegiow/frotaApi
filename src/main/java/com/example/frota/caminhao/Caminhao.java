@@ -42,6 +42,9 @@ public class Caminhao {
 	private double metragemCubica;
 	private double cargaMaxima;
 	private int ano;
+	private double kmTotal = 0.0;
+    private double kmUltimaManutencao = 0.0;
+    private double kmUltimaTrocaPneus = 0.0;
 
 	public Caminhao(CadastroCaminhao dados, Marca marca) {
 		this.modelo = dados.modelo();

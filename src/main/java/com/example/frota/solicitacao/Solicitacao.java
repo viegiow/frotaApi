@@ -40,6 +40,7 @@ public class Solicitacao {
 	private String enderecoPartida;
 	private String enderecoDestino;
 	private LocalDateTime horaColeta;
+	private String status;
 	
 	public Solicitacao(CadastroSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -50,6 +51,7 @@ public class Solicitacao {
 		this.enderecoPartida = dados.enderecoPartida();
 		this.enderecoDestino = dados.enderecoDestino();
 		this.horaColeta = LocalDateTime.parse(dados.horaColeta(), formatter);
+		this.status = "Coleta";
 	}
 	public void atualizarSolicitacao(AtualizacaoSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
 		this.caixa = caixa;
@@ -59,6 +61,8 @@ public class Solicitacao {
 		this.enderecoPartida = dados.enderecoPartida();
 		this.enderecoDestino = dados.enderecoDestino();
 		this.horaColeta = dados.horaColeta();
+		// arrumar isso daqui, tem q criar o método para atualizar o status, provavelmente na camada de service
+		this.status = null;
 	}
 }
 
