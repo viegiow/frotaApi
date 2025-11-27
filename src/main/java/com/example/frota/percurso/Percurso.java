@@ -28,8 +28,8 @@ public class Percurso {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "caminhao_id")
     private Caminhao caminhao;
-    private double kmSaida;
-    private double kmChegada;
-    private double combustivelConsumido;
+    private Double kmSaida;
+    private Double kmChegada;
+    private Double combustivelConsumido;
     private LocalDate data;
 }
