@@ -8,7 +8,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 
+import com.example.frota.errors.ResourceNotFoundException;
 import com.example.frota.marca.Marca;
 import com.example.frota.marca.MarcaService;
 
@@ -46,5 +48,28 @@ public class CaminhaoService {
                 .orElseThrow(() -> new EntityNotFoundException("Caminhão não encontrado com ID: " + dados.id()));
 		atualizarCaminhao.atualizarInformacoes(dados, marca);
 		caminhaoRepository.save(atualizarCaminhao);
+	}
+	public void atualizarKmSaida(@Valid Long id) {
+		Caminhao caminhao = caminhaoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
+		caminhao.setKmSaida(caminhao.getKmChegada());
+		caminhaoRepository.save(caminhao);
+	}
+	public void atualizarKmChegada(@Valid Double kmChegada, Long id) {
+		Caminhao caminhao = caminhaoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
+		Double novoKm = caminhao.getKmChegada() + kmChegada;
+		caminhao.setKmChegada(novoKm);
+		Double rodadoManutencao = novoKm - caminhao.getKmUltimaManutencao();
+		Double rodadoPneu = novoKm - caminhao.getKmUltimaTrocaPneus();
+		if (rodadoManutencao >= 10000) {
+			System.out.println("manutenção de óleo, pastilha e filtro"); //precisa criar serviço da manutenção para criar registro da manutenção
+			caminhao.setKmUltimaManutencao(novoKm);
+		}
+		if (rodadoPneu >= 70000) {
+			System.out.println("troca do pneu"); //precisa criar serviço da manutenção para criar registro da manutenção
+			caminhao.setKmUltimaTrocaPneus(novoKm);
+		}
+		caminhaoRepository.save(caminhao);
 	}
 }

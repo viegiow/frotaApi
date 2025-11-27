@@ -42,9 +42,11 @@ public class Caminhao {
 	private double metragemCubica;
 	private double cargaMaxima;
 	private int ano;
-	private double kmTotal = 0.0;
-    private double kmUltimaManutencao = 0.0;
-    private double kmUltimaTrocaPneus = 0.0;
+	private Double kmSaida; // antes de sair para um percurso
+	private Double kmChegada; // após retornar do percurso
+    private Double kmUltimaManutencao = 0.0; // quantidade de kms rodados desde a última manutenção
+    private Double kmUltimaTrocaPneus = 0.0; // kms rodados desde a ultima troca de pneus
+    private Double totalCombustivel = 0.0;
 
 	public Caminhao(CadastroCaminhao dados, Marca marca) {
 		this.modelo = dados.modelo();
@@ -55,6 +57,8 @@ public class Caminhao {
 		this.comprimento = dados.comprimento();
 		this.largura = dados.largura();
 		this.altura = dados.altura();
+		this.kmSaida = 0.0;
+		this.kmChegada = 0.0;
 	}
 	public Caminhao(AtualizacaoCaminhao dados, Marca marca) {
 		this.modelo = dados.modelo();

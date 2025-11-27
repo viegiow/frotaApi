@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.frota.errors.ResourceNotFoundException;
@@ -88,6 +89,18 @@ public class CaminhaoController {
 			.orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
 		caminhaoService.atualizar(dados);
 		return ResponseEntity.ok("Caminhão atualizado com sucesso");
+	}
+	@PutMapping("/atualizarChegada")
+	@Transactional
+	public ResponseEntity<?> atualizarKmChegada (@RequestBody @Valid CaminhaoAtualizaKm caminhaoKm) {
+		caminhaoService.atualizarKmChegada(caminhaoKm.km(), caminhaoKm.id());
+		return ResponseEntity.ok("Km do caminhão atualizado com sucesso");
+	}
+	@PutMapping("/atualizarSaida")
+	@Transactional
+	public ResponseEntity<?> atualizarKmSaida (@RequestParam Long id) {
+		caminhaoService.atualizarKmSaida(id);
+		return ResponseEntity.ok("Km do caminhão atualizado com sucesso");
 	}
 	
 	@DeleteMapping ("/{id}")
