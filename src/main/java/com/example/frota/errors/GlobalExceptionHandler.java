@@ -77,6 +77,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIllegal(EntregaJaRealizada e){
     	return ResponseEntity.badRequest().body(e.getMessage());
     }
-
+    @ExceptionHandler(StatusErrado.class)
+    public ResponseEntity<String> handleIllegal(StatusErrado e){
+    	return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }
 

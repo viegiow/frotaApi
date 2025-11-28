@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.frota.errors.ResourceNotFoundException;
@@ -59,7 +60,12 @@ public class SolicitacaoController {
 		solicitacaoService.entregar(id);
 		return ResponseEntity.ok("Solicitacao entregue com sucesso!");
 	}
-	
+	@PutMapping("/{id}/cancelar")
+	@Transactional
+	public ResponseEntity<?> cancelar (@PathVariable Long id, @RequestParam String motivo) {
+		solicitacaoService.cancelar(id, motivo);
+		return ResponseEntity.ok("Solicitacao cancelada com sucesso!");
+	}
 	@DeleteMapping ("/{id}")
 	@Transactional
 	public ResponseEntity<?> excluir(@PathVariable Long id) {
