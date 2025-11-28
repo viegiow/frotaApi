@@ -11,6 +11,7 @@ import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
 import com.example.frota.errors.EntregaJaRealizada;
 import com.example.frota.errors.ResourceNotFoundException;
+import com.example.frota.errors.StatusErrado;
 import com.example.frota.frete.FreteCustoDistancia;
 import com.example.frota.frete.FreteService;
 import com.example.frota.produto.Produto;
@@ -65,13 +66,38 @@ public class SolicitacaoService {
 		solicitacaoExistente.atualizarSolicitacao(dados, produto, caixa, custoFrete, custoFrete);
 		solicitacaoRepository.save(solicitacaoExistente);
 	}
+	public void processar(Long id) {
+		Solicitacao solicitacao = solicitacaoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
+		if (!solicitacao.getStatus().equals("Coleta")) { throw new StatusErrado("A solicitação não está no status correto para iniciar o processamento"); }
+		else {
+			solicitacao.setStatus("Em processamento");
+			solicitacaoRepository.save(solicitacao);
+		}
+	}
+	public void aCaminho(Long id) {
+		Solicitacao solicitacao = solicitacaoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
+		if (!solicitacao.getStatus().equals("Em processamento")) { throw new StatusErrado("A solicitação não está no status correto para iniciar o caminho de entrega"); }
+		else {
+			solicitacao.setStatus("A caminho");
+			solicitacaoRepository.save(solicitacao);
+		}
+	}
 	public void entregar(Long id) {
 		Solicitacao solicitacao = solicitacaoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
-		if (solicitacao.getStatus().equals("Entregue")) { throw new EntregaJaRealizada("Solicitação já havia sido entregue"); }
+		if (!solicitacao.getStatus().equals("A caminho")) { throw new EntregaJaRealizada("A solicitação não está no status correto para finalizar a entrega"); }
 		else {
 			solicitacao.setStatus("Entregue");
 			solicitacaoRepository.save(solicitacao);
 		}
+	}
+	public void cancelar(Long id, String motivo) {
+		Solicitacao solicitacao = solicitacaoRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
+		solicitacao.setStatus("Cancelada");
+		solicitacao.setMotivoCancelamento(motivo);
+		solicitacaoRepository.save(solicitacao);
 	}
 }

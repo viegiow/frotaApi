@@ -41,6 +41,7 @@ public class Solicitacao {
 	private String enderecoDestino;
 	private LocalDateTime horaColeta;
 	private String status;
+	private String motivoCancelamento;
 	
 	public Solicitacao(CadastroSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -61,8 +62,6 @@ public class Solicitacao {
 		this.enderecoPartida = dados.enderecoPartida();
 		this.enderecoDestino = dados.enderecoDestino();
 		this.horaColeta = dados.horaColeta();
-		// arrumar isso daqui, tem q criar o método para atualizar o status, provavelmente na camada de service
-		this.status = null;
 	}
 }
 
