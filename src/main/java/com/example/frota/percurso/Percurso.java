@@ -1,35 +1,32 @@
 package com.example.frota.percurso;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import com.example.frota.caminhao.Caminhao;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Table(name = "percursos")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Percurso {
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String origem;
+    private String destino;
+    private Double kmSaida;
+    private Double kmChegada;
+    private LocalDateTime dataSaida;
+    private LocalDateTime dataChegada;
+    @Enumerated(EnumType.STRING)
+    private StatusPercurso status;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "caminhao_id")
     private Caminhao caminhao;
-    private Double kmSaida;
-    private Double kmChegada;
-    private Double combustivelConsumido;
-    private LocalDate data;
+    
 }

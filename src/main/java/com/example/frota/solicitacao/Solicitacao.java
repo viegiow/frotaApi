@@ -2,11 +2,13 @@ package com.example.frota.solicitacao;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import com.example.frota.caixa.Caixa;
+import com.example.frota.percurso.Percurso;
 import com.example.frota.produto.Produto;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,9 +42,13 @@ public class Solicitacao {
 	private String enderecoPartida;
 	private String enderecoDestino;
 	private LocalDateTime horaColeta;
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private StatusSolicitacao status;
 	private String motivoCancelamento;
 	private String telefoneContato;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "percurso_id")
+    private Percurso percurso;
 	
 	public Solicitacao(CadastroSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -53,7 +59,7 @@ public class Solicitacao {
 		this.enderecoPartida = dados.enderecoPartida();
 		this.enderecoDestino = dados.enderecoDestino();
 		this.horaColeta = LocalDateTime.parse(dados.horaColeta(), formatter);
-		this.status = "Coleta";
+		this.status = StatusSolicitacao.COLETA;
 		this.telefoneContato = dados.telefoneContato();
 	}
 	public void atualizarSolicitacao(AtualizacaoSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {

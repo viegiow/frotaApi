@@ -81,7 +81,7 @@ public class CaminhaoService {
 		caminhaoRepository.save(caminhao);
 	}
 
-	public void atualizarKmChegada(@Valid Double kmChegada, Long id) {
+	public void atualizarKmChegada(Double kmChegada, Long id) {
 		Caminhao caminhao = caminhaoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
 

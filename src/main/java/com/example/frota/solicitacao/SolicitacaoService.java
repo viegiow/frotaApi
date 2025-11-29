@@ -73,19 +73,19 @@ public class SolicitacaoService {
 	public void processar(Long id) {
 		Solicitacao solicitacao = solicitacaoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
-		if (!solicitacao.getStatus().equals("Coleta")) { throw new StatusErrado("A solicitação não está no status correto para iniciar o processamento"); }
+		if (!solicitacao.getStatus().equals(StatusSolicitacao.COLETA)) { throw new StatusErrado("A solicitação não está no status correto para iniciar o processamento"); }
 		else {
-			solicitacao.setStatus("Em processamento");
+			solicitacao.setStatus(StatusSolicitacao.EM_PROCESSAMENTO);
 			solicitacaoRepository.save(solicitacao);
 		}
 	}
 	public void aCaminho(Long id) {
 		Solicitacao solicitacao = solicitacaoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
-		if (!solicitacao.getStatus().equals("Em processamento")) { throw new StatusErrado("A solicitação não está no status correto para iniciar o caminho de entrega"); }
+		if (!solicitacao.getStatus().equals(StatusSolicitacao.EM_PROCESSAMENTO)) { throw new StatusErrado("A solicitação não está no status correto para iniciar o caminho de entrega"); }
 		else {
 			RestTemplate restTemplate = new RestTemplate();
-			solicitacao.setStatus("A caminho");
+			solicitacao.setStatus(StatusSolicitacao.A_CAMINHO);
 			
 			// enviar mensagem
 			String to = "whatsapp:" + solicitacao.getTelefoneContato();
@@ -104,16 +104,16 @@ public class SolicitacaoService {
 	public void entregar(Long id) {
 		Solicitacao solicitacao = solicitacaoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
-		if (!solicitacao.getStatus().equals("A caminho")) { throw new EntregaJaRealizada("A solicitação não está no status correto para finalizar a entrega"); }
+		if (!solicitacao.getStatus().equals(StatusSolicitacao.A_CAMINHO)) { throw new EntregaJaRealizada("A solicitação não está no status correto para finalizar a entrega"); }
 		else {
-			solicitacao.setStatus("Entregue");
+			solicitacao.setStatus(StatusSolicitacao.ENTREGUE);
 			solicitacaoRepository.save(solicitacao);
 		}
 	}
 	public void cancelar(Long id, String motivo) {
 		Solicitacao solicitacao = solicitacaoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
-		solicitacao.setStatus("Cancelada");
+		solicitacao.setStatus(StatusSolicitacao.CANCELADO);
 		solicitacao.setMotivoCancelamento(motivo);
 		solicitacaoRepository.save(solicitacao);
 	}
