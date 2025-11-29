@@ -3,12 +3,13 @@ package com.example.frota.manutencao;
 import java.time.LocalDate;
 
 import com.example.frota.caminhao.Caminhao;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -26,14 +27,17 @@ public class Manutencao {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "caminhao_id")
-    private Caminhao caminhao;
-    private double kmRealizada;
-    private boolean trocaOleos;
-    private boolean trocaFiltros;
-    private boolean trocaPastilhas;
-    private boolean trocaPneus;
     private LocalDate data;
+    private Double kmRealizado;
+    @Enumerated(EnumType.STRING)
+    private TipoManutencao tipo;
+    @ManyToOne
+    private Caminhao caminhao;
 
+    public Manutencao (LocalDate data, Double kmChegada, TipoManutencao tipo, Caminhao caminhao) {
+    	this.data = data;
+    	this.kmRealizado = kmChegada;
+    	this.tipo = tipo;
+    	this.caminhao = caminhao;
+    }
 }
