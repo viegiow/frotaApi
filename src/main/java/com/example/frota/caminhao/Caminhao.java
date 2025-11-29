@@ -1,7 +1,11 @@
 package com.example.frota.caminhao;
 
+import java.util.List;
+
+import com.example.frota.manutencao.Manutencao;
 import com.example.frota.marca.Marca;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -47,6 +52,11 @@ public class Caminhao {
     private Double kmUltimaManutencao = 0.0; // quantidade de kms rodados desde a última manutenção
     private Double kmUltimaTrocaPneus = 0.0; // kms rodados desde a ultima troca de pneus
     private Double totalCombustivel = 0.0;
+    private Double kmAtual = 0.0;
+    private Boolean manutencaoPendente = false;      // manutenção a cada 10.000 km
+    private Boolean trocaPneusPendente = false;      // troca de pneus a cada 70.000 km
+    @OneToMany(mappedBy = "caminhao", cascade = CascadeType.ALL)
+    private List<Manutencao> manutencoes;
 
 	public Caminhao(CadastroCaminhao dados, Marca marca) {
 		this.modelo = dados.modelo();

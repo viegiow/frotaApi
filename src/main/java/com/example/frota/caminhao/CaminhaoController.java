@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.frota.errors.ResourceNotFoundException;
+import com.example.frota.manutencao.Manutencao;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -111,6 +112,11 @@ public class CaminhaoController {
 		caminhaoService.apagarPorId(id);
 		return ResponseEntity.ok("Caminhão deletado com sucesso");
 	}
-	
+	@GetMapping("/{id}/manutencoes")
+	public List<Manutencao> listarManutencoes(@PathVariable Long id) {
+	    Caminhao caminhao = caminhaoService.procurarPorId(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado."));
+	    return caminhao.getManutencoes();
+	}
 
 }
