@@ -20,7 +20,6 @@ public class WhatsappService {
 
 	public void enviarMensagem(String to) {
 		Twilio.init(accountSid, authToken);
-		System.out.println(to);
         Message.creator(
                 new PhoneNumber(to),
                 new PhoneNumber(from),

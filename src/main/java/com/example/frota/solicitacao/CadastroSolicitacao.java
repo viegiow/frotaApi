@@ -19,7 +19,9 @@ public record CadastroSolicitacao(
 		Long caixaId,
 		@NotNull(message="horário de coleta não pode ser nulo")
 		@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-		String horaColeta
+		String horaColeta,
+		@NotBlank(message="o telefone para contato não pode ser nulo")
+		String telefoneContato
 		) {
 	
 	public CadastroSolicitacao {

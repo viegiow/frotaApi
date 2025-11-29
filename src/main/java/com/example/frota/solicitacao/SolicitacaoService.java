@@ -1,11 +1,16 @@
 package com.example.frota.solicitacao;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.frota.caixa.Caixa;
 import com.example.frota.caixa.CaixaService;
@@ -30,7 +35,6 @@ public class SolicitacaoService {
 	
 	@Autowired
 	private FreteService freteService;
-
 	
 	public List<Solicitacao> procurarTodos(){
 		return solicitacaoRepository.findAll(Sort.by("frete").ascending());
@@ -80,7 +84,20 @@ public class SolicitacaoService {
 				.orElseThrow(() -> new ResourceNotFoundException("Solicitação não encontrada"));
 		if (!solicitacao.getStatus().equals("Em processamento")) { throw new StatusErrado("A solicitação não está no status correto para iniciar o caminho de entrega"); }
 		else {
+			RestTemplate restTemplate = new RestTemplate();
 			solicitacao.setStatus("A caminho");
+			
+			// enviar mensagem
+			String to = "whatsapp:" + solicitacao.getTelefoneContato();
+			String encoded = URLEncoder.encode(to, StandardCharsets.UTF_8);
+
+			URI uri = UriComponentsBuilder
+			        .fromUriString("http://localhost:8081/api/whatsapp/enviar")
+			        .queryParam("to", encoded)
+			        .build(true)
+			        .toUri();
+
+			restTemplate.postForObject(uri, null, String.class);
 			solicitacaoRepository.save(solicitacao);
 		}
 	}

@@ -42,6 +42,7 @@ public class Solicitacao {
 	private LocalDateTime horaColeta;
 	private String status;
 	private String motivoCancelamento;
+	private String telefoneContato;
 	
 	public Solicitacao(CadastroSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -53,6 +54,7 @@ public class Solicitacao {
 		this.enderecoDestino = dados.enderecoDestino();
 		this.horaColeta = LocalDateTime.parse(dados.horaColeta(), formatter);
 		this.status = "Coleta";
+		this.telefoneContato = dados.telefoneContato();
 	}
 	public void atualizarSolicitacao(AtualizacaoSolicitacao dados, Produto produto, Caixa caixa, Double frete, Double pedagio) {
 		this.caixa = caixa;

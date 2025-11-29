@@ -66,6 +66,12 @@ public class SolicitacaoController {
 		solicitacaoService.cancelar(id, motivo);
 		return ResponseEntity.ok("Solicitacao cancelada com sucesso!");
 	}
+	@PutMapping("/{id}/teste")
+	@Transactional
+	public ResponseEntity<?> teste (@PathVariable Long id) {
+		solicitacaoService.aCaminho(id);
+		return ResponseEntity.ok("Solicitacao entregue com sucesso!");
+	}
 	@DeleteMapping ("/{id}")
 	@Transactional
 	public ResponseEntity<?> excluir(@PathVariable Long id) {
