@@ -32,6 +32,10 @@ public class SolicitacaoController {
 	    return solicitacaoService.procurarTodos();
 	}
 	
+	@GetMapping("/processamento")
+	public List<Solicitacao> listarSolicitacoesEmProcessamento (){
+	    return solicitacaoService.procurarPorStatusProcessamento();
+	}
 	@GetMapping("/{id}")        
 	public Solicitacao procurarSolicitacoes (@PathVariable("id") Long id){
 		Solicitacao solicitacao = solicitacaoService.procurarPorId(id)

@@ -120,4 +120,7 @@ public class SolicitacaoService {
 		solicitacao.setMotivoCancelamento(motivo);
 		solicitacaoRepository.save(solicitacao);
 	}
+	public List<Solicitacao> procurarPorStatusProcessamento() {
+		return solicitacaoRepository.findByStatus(StatusSolicitacao.EM_PROCESSAMENTO);
+	}
 }
