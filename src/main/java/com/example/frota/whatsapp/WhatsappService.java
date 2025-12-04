@@ -1,6 +1,4 @@
 package com.example.frota.whatsapp;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.twilio.Twilio;
@@ -9,14 +7,9 @@ import com.twilio.type.PhoneNumber;
 
 @Service
 public class WhatsappService {
-	@Value("${twilio.account-sid}")
-	private String accountSid;
-
-	@Value("${twilio.auth-token}")
-	private String authToken;
-
-	@Value("${twilio.whatsapp.from}")
-	private String from;
+	private String accountSid = "ACdad734bd0b337648bb1316a194920510";
+	private String authToken = "b68ba53c7521eb4266429a14864bd6d1";
+	private String from = "whatsapp:+14155238886";
 
 	public void enviarMensagem(String to) {
 		Twilio.init(accountSid, authToken);
