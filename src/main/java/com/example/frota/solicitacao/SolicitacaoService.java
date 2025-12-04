@@ -19,6 +19,7 @@ import com.example.frota.errors.ResourceNotFoundException;
 import com.example.frota.errors.StatusErrado;
 import com.example.frota.frete.FreteCustoDistancia;
 import com.example.frota.frete.FreteService;
+import com.example.frota.produto.CadastroProduto;
 import com.example.frota.produto.Produto;
 import com.example.frota.produto.ProdutoService;
 
@@ -48,11 +49,13 @@ public class SolicitacaoService {
 	}
 
 	public void salvar(CadastroSolicitacao dados) {
-		Produto produto = produtoService.procurarPorId(dados.produtoId())
-				.orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 		Caixa caixa = caixaService.procurarPorId(dados.caixaId())
 				.orElseThrow(() -> new ResourceNotFoundException("Caixa não encontrada"));
-		FreteCustoDistancia dadosFrete = new FreteCustoDistancia(dados.enderecoPartida(), dados.enderecoDestino(),dados.produtoId(), dados.caixaId());
+		CadastroProduto dadosProduto = new CadastroProduto(dados.comprimentoProduto(), dados.alturaProduto(), dados.larguraProduto(),
+				dados.pesoProduto(), dados.nomeProduto());
+		Produto produto = produtoService.salvar(dadosProduto);
+		FreteCustoDistancia dadosFrete = new FreteCustoDistancia(dados.enderecoPartida(), dados.enderecoDestino(),produto.getId(),
+				dados.caixaId());
 		Double custoFrete = freteService.obterTotalFrete(dadosFrete);
 		Solicitacao novaSolicitacao = new Solicitacao(dados, produto, caixa, custoFrete, 0.0);
 		solicitacaoRepository.save(novaSolicitacao);

@@ -6,20 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.frota.marca.DadosAtualizacaoMarca;
-import com.example.frota.marca.DadosCadastroMarca;
-import com.example.frota.marca.Marca;
-
-import jakarta.persistence.EntityNotFoundException;
-
 @Service
 public class ProdutoService {
 	@Autowired
 	private ProdutoRepository produtoRepository;
 	
-	public void salvar(CadastroProduto dados) {
+	public Produto salvar(CadastroProduto dados) {
 		Produto novoProduto = new Produto(dados);
-		produtoRepository.save(novoProduto);
+		return produtoRepository.save(novoProduto);
 	}
 	public void atualizar(AtualizacaoProduto dados) {
 		Produto atualizarProduto = produtoRepository.getReferenceById(dados.id());

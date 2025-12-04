@@ -2,7 +2,6 @@ package com.example.frota.produto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record CadastroProduto(
 		@Min (value = 1, message="comprimento do produto é obrigatório e deve ser maior que 1")
