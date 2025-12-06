@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.frota.errors.ResourceNotFoundException;
-import com.example.frota.solicitacao.AtualizacaoSolicitacao;
-import com.example.frota.solicitacao.CadastroSolicitacao;
-import com.example.frota.solicitacao.Solicitacao;
-import com.example.frota.solicitacao.SolicitacaoService;
+
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -27,49 +24,36 @@ import jakarta.validation.Valid;
 @RequestMapping("/feedback")
 @CrossOrigin("*")
 public class FeedbackController {
+
 	@Autowired
-	private SolicitacaoService solicitacaoService;
+	private FeedbackService feedbackService;
 	
 	@GetMapping                 
-	public List<Solicitacao> listarSolicitacoes (){
-	    return solicitacaoService.procurarTodos();
+	public List<Feedback> listarFeedbacks (){
+	    return feedbackService.procurarTodos();
 	}
 	
 	@GetMapping("/{id}")        
-	public Solicitacao procurarSolicitacoes (@PathVariable("id") Long id){
-		Solicitacao solicitacao = solicitacaoService.procurarPorId(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Solicitacao não encontrada"));
-		return solicitacao;
+	public Feedback procurarFeedbacks (@PathVariable("id") Long id){
+		Feedback feedback = feedbackService.procurarPorId(id)
+				.orElseThrow(() -> new ResourceNotFoundException("feedback não encontrado"));
+		return feedback;
 	}
 	
 	@PostMapping
 	@Transactional
-	public ResponseEntity<?> cadastrar(@RequestBody @Valid CadastroSolicitacao dados) {
-		solicitacaoService.salvar(dados);
-		return ResponseEntity.ok("Solicitacao criada com sucesso!");
-		
-	}
-
-	@PutMapping
-	@Transactional
-	public ResponseEntity<?> atualizar (@RequestBody @Valid AtualizacaoSolicitacao dados) {
-		solicitacaoService.atualizar(dados);
-		return ResponseEntity.ok("Solicitacao atualizada com sucesso!");
+	public ResponseEntity<?> cadastrar(@RequestBody @Valid CadastroFeedback dados) {
+		feedbackService.salvar(dados);
+		return ResponseEntity.ok("feedback criada com sucesso!");
 	}
 	
-	@PutMapping("/{id}/entregar")
-	@Transactional
-	public ResponseEntity<?> entregar (@PathVariable Long id) {
-		solicitacaoService.entregar(id);
-		return ResponseEntity.ok("Solicitacao entregue com sucesso!");
-	}
 	
 	@DeleteMapping ("/{id}")
 	@Transactional
 	public ResponseEntity<?> excluir(@PathVariable Long id) {
-		solicitacaoService.procurarPorId(id)
-			.orElseThrow(() -> new ResourceNotFoundException("Solicitacao não encontrada."));
-		solicitacaoService.apagarPorId(id);
-		return ResponseEntity.ok("Solicitacao deletada com sucesso!");
+		feedbackService.procurarPorId(id)
+			.orElseThrow(() -> new ResourceNotFoundException("feedback não encontrada."));
+		feedbackService.apagarPorId(id);
+		return ResponseEntity.ok("feedback deletada com sucesso!");
 	}
 }
