@@ -1,6 +1,7 @@
 package com.example.frota.caminhao;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,14 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
-
 import com.example.frota.errors.ResourceNotFoundException;
 import com.example.frota.manutencao.Manutencao;
 import com.example.frota.manutencao.TipoManutencao;
 import com.example.frota.marca.Marca;
 import com.example.frota.marca.MarcaService;
+import com.example.frota.percurso.PercursoService;
+import com.example.frota.solicitacao.Solicitacao;
+import com.example.frota.solicitacao.SolicitacaoService;
+import com.example.frota.solicitacao.StatusSolicitacao;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 
 @Service
 public class CaminhaoService {
@@ -24,7 +29,13 @@ public class CaminhaoService {
 
 	@Autowired
 	private MarcaService marcaService;
-
+	
+	@Autowired
+	private SolicitacaoService solicitacaoService;
+	
+	@Autowired
+	private PercursoService percursoService;
+	
 	public Caminhao salvar(CadastroCaminhao dados) {
 		Marca marca = marcaService.procurarPorId(dados.marcaId())
 				.orElseThrow(() -> new EntityNotFoundException("Marca não encontrada com ID: " + dados.marcaId()));
@@ -115,6 +126,34 @@ public class CaminhaoService {
 
 		caminhao.getManutencoes().add(m);
 		caminhaoRepository.save(caminhao);
+	}
+	public void lotarCaminhao() {
+		List<Solicitacao> solicitacoesEmProcessamento = solicitacaoService.procurarPorStatusProcessamento(StatusSolicitacao.EM_PROCESSAMENTO);
+		List<Caminhao> caminhoesDisponiveis = caminhaoRepository.findByDisponivel(true);
+		List<Solicitacao> solicitacoesProcessadas = new ArrayList<Solicitacao>();
+		
+		// if não tem caminhões disponíveis, gerar erro
+		for (Caminhao caminhao : caminhoesDisponiveis) {
+			//lotar
+			int volumeDisponivel = caminhao.getVolume();
+			Double pesoDisponivel = caminhao.getCargaMaxima() - caminhao.getCargaAtual();
+			
+			for (Solicitacao solicitacao : solicitacoesEmProcessamento) {
+				int volumeProduto = solicitacao.getProduto().getVolume();
+				Double pesoProduto = solicitacao.getProduto().getPesoProduto();
+				if (volumeProduto <= volumeDisponivel && pesoProduto <= pesoDisponivel) {
+					solicitacoesProcessadas.add(solicitacao);
+					caminhao.setVolumeAtual(caminhao.getVolumeAtual() + volumeProduto);
+					caminhao.setCargaAtual(caminhao.getCargaAtual() + pesoProduto);
+				}
+			}
+			// criar percursos com solicitacoes que lotaram o caminhao
+			if (!solicitacoesProcessadas.isEmpty()) {
+				percursoService.criarPercurso(caminhao, solicitacoesProcessadas);
+			}
+			
+		}
+		
 	}
 
 }

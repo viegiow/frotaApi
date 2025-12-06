@@ -46,6 +46,7 @@ public class Caminhao {
 	private int fatorCubagem = 300;
 	private double metragemCubica;
 	private double cargaMaxima;
+	private double cargaAtual;
 	private int ano;
 	private Double kmSaida; // antes de sair para um percurso
 	private Double kmChegada; // após retornar do percurso
@@ -57,6 +58,8 @@ public class Caminhao {
     private Boolean trocaPneusPendente = false;      // troca de pneus a cada 70.000 km
     @OneToMany(mappedBy = "caminhao", cascade = CascadeType.ALL)
     private List<Manutencao> manutencoes;
+    private Boolean disponivel;
+    private int volumeAtual;
 
 	public Caminhao(CadastroCaminhao dados, Marca marca) {
 		this.modelo = dados.modelo();
@@ -69,6 +72,7 @@ public class Caminhao {
 		this.altura = dados.altura();
 		this.kmSaida = 0.0;
 		this.kmChegada = 0.0;
+		this.disponivel = true;
 	}
 	public Caminhao(AtualizacaoCaminhao dados, Marca marca) {
 		this.modelo = dados.modelo();
@@ -104,6 +108,9 @@ public class Caminhao {
 	public void setMetragemCubica() {
 		if (this.comprimento == 0 || this.largura == 0 || this.altura == 0) {this.metragemCubica = 0.0;}
 		this.metragemCubica = ((this.comprimento/100) * (this.largura/100) * (this.altura/100));
+	}
+	public int getVolume() {
+		return this.comprimento * this.largura * this.altura;
 	}
 	
 }

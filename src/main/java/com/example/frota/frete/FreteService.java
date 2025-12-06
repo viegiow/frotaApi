@@ -4,6 +4,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ import com.example.frota.parametros.Parametro;
 import com.example.frota.parametros.ParametroService;
 import com.example.frota.produto.Produto;
 import com.example.frota.produto.ProdutoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -62,8 +65,9 @@ public class FreteService {
         return semAcentos;
     }
 
-    public double[] obterCoordenadas(RestTemplate restTemplate, String endereco) throws Exception {
+    public double[] obterCoordenadas(String endereco) throws Exception {
     	try {
+    		RestTemplate restTemplate = new RestTemplate();
     		String enderecoEncoded  = removerAcentos(endereco);
     		
     		URI uri = UriComponentsBuilder
@@ -90,12 +94,40 @@ public class FreteService {
         }
     }
     
+    public String obterEndereco(double lat, double lng) throws JsonMappingException, JsonProcessingException {
+    	RestTemplate restTemplate = new RestTemplate();
+        String url = String.format(
+        		Locale.US,
+                "https://revgeocode.search.hereapi.com/v1/revgeocode?at=%f,%f&lang=pt-BR&apiKey=%s",
+                lat, lng, API_KEY_HERE
+        );
+
+        String respostaJson = restTemplate.getForObject(url, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(respostaJson);
+        JsonNode items = root.path("items");
+        if (!items.isArray() || items.isEmpty()) {
+            return null;
+        }
+
+        JsonNode item0 = items.get(0);
+
+        // Pega o "label" dentro de address
+        String endereco = item0.path("address").path("label").asText();
+
+        if (endereco == null || endereco.isBlank()) {
+            return null;
+        }
+
+        return endereco;
+    }
+    
     public Double calcularPedagios(String origem, String destino) {
     	try {
     		RestTemplate restTemplate = new RestTemplate();
     		
-            double[] coordOrigem = obterCoordenadas(restTemplate, origem);
-            double[] coordDestino = obterCoordenadas(restTemplate, destino);
+            double[] coordOrigem = obterCoordenadas(origem);
+            double[] coordDestino = obterCoordenadas(destino);
             
             if (coordOrigem == null || coordDestino == null)
             	throw new RuntimeException("Erro ao obter coordenadas.");
