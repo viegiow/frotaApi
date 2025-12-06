@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.frota.manutencao.Manutencao;
 import com.example.frota.marca.Marca;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,6 +30,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of ="id")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Caminhao {
 
 	@Id

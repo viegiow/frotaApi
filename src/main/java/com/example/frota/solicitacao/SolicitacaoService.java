@@ -95,18 +95,19 @@ public class SolicitacaoService {
 		else {
 			RestTemplate restTemplate = new RestTemplate();
 			solicitacao.setStatus(StatusSolicitacao.A_CAMINHO);
+			solicitacao.getPercurso().getCaminhao().setDisponivel(false);
 			
-			// enviar mensagem
-			String to = "whatsapp:" + solicitacao.getTelefoneContato();
-			String encoded = URLEncoder.encode(to, StandardCharsets.UTF_8);
-
-			URI uri = UriComponentsBuilder
-			        .fromUriString("http://localhost:8081/api/whatsapp/enviar")
-			        .queryParam("to", encoded)
-			        .build(true)
-			        .toUri();
-
-			restTemplate.postForObject(uri, null, String.class);
+			// enviar mensagem DESABILITEI PQ PRECISA INICIAR A SANDBOX PRA FUNCIONAR SE NÃO DÁ ERRO
+//			String to = "whatsapp:" + solicitacao.getTelefoneContato();
+//			String encoded = URLEncoder.encode(to, StandardCharsets.UTF_8);
+//
+//			URI uri = UriComponentsBuilder
+//			        .fromUriString("http://localhost:8081/api/whatsapp/enviar")
+//			        .queryParam("to", encoded)
+//			        .build(true)
+//			        .toUri();
+//
+//			restTemplate.postForObject(uri, null, String.class);
 			solicitacaoRepository.save(solicitacao);
 		}
 	}

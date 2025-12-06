@@ -103,10 +103,10 @@ public class PercursoService {
 	public Percurso finalizarPercurso(FinalizarPercurso dados) {
 		Percurso percurso = percursoRepository.findById(dados.percursoId())
 				.orElseThrow(() -> new ResourceNotFoundException("Percurso não encontrado"));
-		Caminhao cam = percurso.getCaminhao();
 		percurso.setDataChegada(LocalDateTime.now());
-		percurso.setKmChegada(cam.getKmChegada());
+		percurso.setKmChegada(percurso.getCaminhao().getKmChegada());
 		percurso.setStatus(StatusPercurso.FINALIZADO);
+		percurso.getCaminhao().setDisponivel(true);
 		return percursoRepository.save(percurso);
 	}
 
