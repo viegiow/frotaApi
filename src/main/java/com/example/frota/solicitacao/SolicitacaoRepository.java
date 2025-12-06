@@ -10,4 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long>{
 	List<Solicitacao> findByStatus(StatusSolicitacao status);
+
+	List<Solicitacao> findByPercursoId(Long id);
 }

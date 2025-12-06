@@ -45,4 +45,7 @@ public class Produto {
 			this.pesoProduto = dados.pesoProduto();
 		}
 	}
+	public int getVolume() {
+		return this.comprimento * this.altura * this.largura;
+	}
 }

@@ -8,7 +8,7 @@ import com.twilio.type.PhoneNumber;
 @Service
 public class WhatsappService {
 	private String accountSid = "ACdad734bd0b337648bb1316a194920510";
-	private String authToken = "b68ba53c7521eb4266429a14864bd6d1";
+	private String authToken = "820e132996755280e24d592d536f54c5";
 	private String from = "whatsapp:+14155238886";
 
 	public void enviarMensagem(String to) {

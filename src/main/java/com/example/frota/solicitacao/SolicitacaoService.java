@@ -47,6 +47,12 @@ public class SolicitacaoService {
 	public Optional<Solicitacao> procurarPorId(Long id) {
 		return solicitacaoRepository.findById(id);
 	}
+	public List<Solicitacao> procurarPorStatusProcessamento(StatusSolicitacao status) {
+		return solicitacaoRepository.findByStatus(status);
+	}
+	public List<Solicitacao> procurarPorPercurso(Long id) {
+		return solicitacaoRepository.findByPercursoId(id);
+	}
 
 	public void salvar(CadastroSolicitacao dados) {
 		Caixa caixa = caixaService.procurarPorId(dados.caixaId())
@@ -120,7 +126,5 @@ public class SolicitacaoService {
 		solicitacao.setMotivoCancelamento(motivo);
 		solicitacaoRepository.save(solicitacao);
 	}
-	public List<Solicitacao> procurarPorStatusProcessamento() {
-		return solicitacaoRepository.findByStatus(StatusSolicitacao.EM_PROCESSAMENTO);
-	}
+	
 }

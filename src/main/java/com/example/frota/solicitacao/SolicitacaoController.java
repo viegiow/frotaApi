@@ -34,7 +34,7 @@ public class SolicitacaoController {
 	
 	@GetMapping("/processamento")
 	public List<Solicitacao> listarSolicitacoesEmProcessamento (){
-	    return solicitacaoService.procurarPorStatusProcessamento();
+	    return solicitacaoService.procurarPorStatusProcessamento(StatusSolicitacao.EM_PROCESSAMENTO);
 	}
 	@GetMapping("/{id}")        
 	public Solicitacao procurarSolicitacoes (@PathVariable("id") Long id){
@@ -57,7 +57,12 @@ public class SolicitacaoController {
 		solicitacaoService.atualizar(dados);
 		return ResponseEntity.ok("Solicitacao atualizada com sucesso!");
 	}
-	
+	@PutMapping("/{id}/coletar")
+	@Transactional
+	public ResponseEntity<?> coletar (@PathVariable Long id) {
+		solicitacaoService.processar(id);
+		return ResponseEntity.ok("Solicitacao coletada com sucesso! Início do processamento");
+	}
 	@PutMapping("/{id}/entregar")
 	@Transactional
 	public ResponseEntity<?> entregar (@PathVariable Long id) {
@@ -69,12 +74,6 @@ public class SolicitacaoController {
 	public ResponseEntity<?> cancelar (@PathVariable Long id, @RequestParam String motivo) {
 		solicitacaoService.cancelar(id, motivo);
 		return ResponseEntity.ok("Solicitacao cancelada com sucesso!");
-	}
-	@PutMapping("/{id}/teste")
-	@Transactional
-	public ResponseEntity<?> teste (@PathVariable Long id) {
-		solicitacaoService.aCaminho(id);
-		return ResponseEntity.ok("Solicitacao entregue com sucesso!");
 	}
 	@DeleteMapping ("/{id}")
 	@Transactional
